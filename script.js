@@ -27,7 +27,7 @@ function moveBall() {
 function startShaking() {
     if (!isShaking) {
         isShaking = true;
-        ball.textContent = "🎱"; // Сбрасываем текст на эмодзи шара
+        ball.textContent = ""; // Убираем текст
         ball.classList.add('shaking'); // Добавляем класс для вращения
         shakeTimer = setInterval(moveBall, 100); // Перемещаем шар каждые 100 мс
     }

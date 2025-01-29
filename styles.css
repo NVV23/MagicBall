@@ -13,28 +13,30 @@ body, html {
 .ball {
     width: 150px;
     height: 150px;
-    background-color: #000;
+    background: radial-gradient(circle, #f0f0f0 20%, #333 90%);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
-    color: white;
+    font-size: 18px;
+    color: #000;
     text-align: center;
     user-select: none;
     position: absolute;
     transition: transform 0.1s ease-out, opacity 0.5s ease-in-out;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    opacity: 0; /* Начальная прозрачность */
 }
 
 /* Анимация вращения шара */
 @keyframes spin {
-    from { transform: rotate(0deg) translate(-50%, -50%); }
-    to { transform: rotate(360deg) translate(-50%, -50%); }
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 .ball.shaking {
     animation: spin 0.5s linear infinite;
+    opacity: 1; /* Шар видим при тряске */
 }
 
 .ball.stopping {
@@ -43,12 +45,13 @@ body, html {
 
 @keyframes slowStop {
     to {
+        transform: rotate(0deg);
         animation-play-state: paused;
     }
 }
 
 .ball.showing-answer {
     animation: none;
-    transform: rotate(0deg) translate(-50%, -50%);
-    opacity: 1;
+    transform: rotate(0deg);
+    opacity: 1; /* Плавное появление ответа */
 }
