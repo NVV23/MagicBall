@@ -28,8 +28,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: none; /* Initially no rotation */
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Add some shadow for better appearance */
+    animation: none; /* Initially no rotation */
 }
 
 @keyframes rotate {
