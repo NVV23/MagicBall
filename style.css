@@ -1,3 +1,4 @@
+/* Стиль для всего документа */
 body, html {
     margin: 0;
     padding: 0;
@@ -6,37 +7,40 @@ body, html {
     justify-content: center;
     align-items: center;
     background-color: #f0f0f0;
+    font-family: 'Arial', sans-serif;
 }
 
+/* Контейнер для шара */
 .container {
     position: relative;
-    width: 90%;
-    max-width: 400px;
-    height: 90%;
-    max-height: 400px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
 }
 
+/* Шар */
 .magic-ball {
     position: absolute;
     width: 80%;
-    height: 80%;
+    max-width: 300px;
+    aspect-ratio: 1 / 1; /* Круглый шар */
     background: radial-gradient(circle at 50% 50%, #00008b, #0000ff);
     border-radius: 50%;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.1s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
+/* Текст ответа */
 #answer {
     color: white;
-    font-size: 2rem;
-    font-family: 'Arial', sans-serif;
+    font-size: 1.5rem;
     text-align: center;
     padding: 10px;
+    line-height: 1.2;
 }
