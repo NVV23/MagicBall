@@ -9,8 +9,9 @@ const responses = [
 
 let isShaking = false;
 let stopTimeout;
-let dx = 0, dy = 0; // Направление и скорость движения шара
+let dx = 0, dy = 0; // Направление движения шара
 let animationFrame;
+let speed = 5; // Постоянная скорость шара
 let deceleration = 0; // Замедление шара
 
 // Функция для получения случайного ответа
@@ -23,10 +24,10 @@ function startShaking() {
     if (!isShaking) {
         isShaking = true;
         screen.textContent = ""; // Очищаем экран
+        screen.style.opacity = 0; // Скрываем экран
 
         // Задаем случайное направление движения
         const angle = Math.random() * 2 * Math.PI; // Случайный угол
-        const speed = 10; // Начальная скорость движения
         dx = Math.cos(angle) * speed;
         dy = Math.sin(angle) * speed;
 
@@ -41,7 +42,7 @@ function stopShaking() {
         isShaking = false;
 
         // Запускаем плавное замедление шара
-        deceleration = Math.hypot(dx, dy) / 120; // Замедление за 2 секунды (120 кадров)
+        deceleration = speed / 180; // Замедление за 3 секунды (60 кадров/сек * 3 сек)
         slowDownBall();
     }
 }
@@ -56,10 +57,11 @@ function slowDownBall() {
         dx = 0;
         dy = 0;
 
-        // Ждем 2 секунды, затем показываем ответ
+        // Ждем 3 секунды, затем показываем ответ
         stopTimeout = setTimeout(() => {
             screen.textContent = getRandomResponse(); // Показываем случайный ответ
-        }, 2000);
+            screen.style.opacity = 1; // Плавное появление ответа
+        }, 3000);
     }
 }
 
