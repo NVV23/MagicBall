@@ -9,8 +9,9 @@ const responses = [
 
 let isShaking = false;
 let stopTimeout;
-let dx, dy; // Направление движения шара
+let dx = 0, dy = 0; // Направление и скорость движения шара
 let animationFrame;
+let deceleration = 0; // Замедление шара
 
 // Функция для получения случайного ответа
 function getRandomResponse() {
@@ -21,12 +22,11 @@ function getRandomResponse() {
 function startShaking() {
     if (!isShaking) {
         isShaking = true;
-        ball.style.opacity = 1; // Делаем шар видимым
         screen.textContent = ""; // Очищаем экран
 
         // Задаем случайное направление движения
         const angle = Math.random() * 2 * Math.PI; // Случайный угол
-        const speed = 10; // Скорость движения
+        const speed = 10; // Начальная скорость движения
         dx = Math.cos(angle) * speed;
         dy = Math.sin(angle) * speed;
 
@@ -40,8 +40,21 @@ function stopShaking() {
     if (isShaking) {
         isShaking = false;
 
-        // Останавливаем анимацию
-        cancelAnimationFrame(animationFrame);
+        // Запускаем плавное замедление шара
+        deceleration = Math.hypot(dx, dy) / 120; // Замедление за 2 секунды (120 кадров)
+        slowDownBall();
+    }
+}
+
+// Функция для замедления шара
+function slowDownBall() {
+    if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        dx -= (dx / Math.hypot(dx, dy)) * deceleration;
+        dy -= (dy / Math.hypot(dx, dy)) * deceleration;
+        moveBall();
+    } else {
+        dx = 0;
+        dy = 0;
 
         // Ждем 2 секунды, затем показываем ответ
         stopTimeout = setTimeout(() => {
@@ -52,8 +65,6 @@ function stopShaking() {
 
 // Функция для движения шара
 function moveBall() {
-    if (!isShaking) return; // Останавливаем движение, если тряска прекратилась
-
     // Получаем текущие координаты шара
     let x = parseFloat(ball.style.left) || window.innerWidth / 2;
     let y = parseFloat(ball.style.top) || window.innerHeight / 2;
@@ -86,7 +97,9 @@ function moveBall() {
     ball.style.top = `${y}px`;
 
     // Рекурсивно вызываем функцию для следующего кадра
-    animationFrame = requestAnimationFrame(moveBall);
+    if (isShaking || Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+        animationFrame = requestAnimationFrame(moveBall);
+    }
 }
 
 // Обработчик события тряски телефона
@@ -104,3 +117,7 @@ window.addEventListener('devicemotion', (event) => {
 // Для тестирования на компьютере
 window.addEventListener('mousedown', startShaking);
 window.addEventListener('mouseup', stopShaking);
+
+// Инициализация начального положения шара
+ball.style.left = `${window.innerWidth / 2}px`;
+ball.style.top = `${window.innerHeight / 2}px`;

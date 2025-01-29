@@ -20,7 +20,7 @@ body, html {
     align-items: center;
     position: absolute;
     transition: opacity 0.5s ease-in-out;
-    opacity: 0; /* Начальная прозрачность */
+    opacity: 1; /* Шар видим с самого начала */
     transform: translate(-50%, -50%); /* Центрирование шара */
     box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
 }
