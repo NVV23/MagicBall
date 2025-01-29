@@ -8,6 +8,7 @@ body, html {
     background-color: #1a1a1a;
     font-family: 'Arial', sans-serif;
     overflow: hidden;
+    user-select: none; /* Запрет выделения текста */
 }
 
 .ball {
@@ -39,4 +40,5 @@ body, html {
     border: 2px solid #444;
     opacity: 0; /* Начальная прозрачность экрана */
     transition: opacity 0.5s ease-in-out; /* Плавное появление ответа */
+    user-select: none; /* Запрет выделения текста */
 }

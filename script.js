@@ -62,11 +62,9 @@ function slowDownBall() {
         dx = 0;
         dy = 0;
 
-        // Показываем ответ через 3 секунды
-        stopTimeout = setTimeout(() => {
-            screen.textContent = getRandomResponse(); // Показываем случайный ответ
-            screen.style.opacity = 1; // Плавное появление ответа
-        }, 0); // Ответ показываем сразу после остановки
+        // Показываем ответ
+        screen.textContent = getRandomResponse(); // Показываем случайный ответ
+        screen.style.opacity = 1; // Плавное появление ответа
     }
 }
 
@@ -120,10 +118,6 @@ window.addEventListener('devicemotion', (event) => {
         stopShaking();
     }
 });
-
-// Для тестирования на компьютере
-window.addEventListener('mousedown', startShaking);
-window.addEventListener('mouseup', stopShaking);
 
 // Инициализация начального положения шара
 ball.style.left = `${window.innerWidth / 2}px`;
