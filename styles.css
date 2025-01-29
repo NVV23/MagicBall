@@ -11,19 +11,19 @@ body, html {
 }
 
 .ball {
-    width: 150px;
-    height: 150px;
+    width: 225px; /* Увеличили размер шара в 1.5 раза */
+    height: 225px;
     background: radial-gradient(circle, #f0f0f0 20%, #333 90%);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 18px;
+    font-size: 24px;
     color: #000;
     text-align: center;
     user-select: none;
     position: absolute;
-    transition: all 0.5s ease-out;
+    transition: opacity 0.5s ease-in-out;
     opacity: 0; /* Начальная прозрачность */
     transform: translate(-50%, -50%); /* Центрирование шара */
 }
