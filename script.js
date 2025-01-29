@@ -1,4 +1,5 @@
 const ball = document.getElementById('ball');
+const screen = document.getElementById('screen');
 const responses = [
     "Да", "Нет", "Возможно", "Скорее всего да", "Скорее всего нет",
     "Я устал, спроси позже", "Я не экстрасенс, я просто шар",
@@ -9,6 +10,7 @@ const responses = [
 let isShaking = false;
 let stopTimeout;
 let dx, dy; // Направление движения шара
+let animationFrame;
 
 // Функция для получения случайного ответа
 function getRandomResponse() {
@@ -20,7 +22,7 @@ function startShaking() {
     if (!isShaking) {
         isShaking = true;
         ball.style.opacity = 1; // Делаем шар видимым
-        ball.textContent = ""; // Очищаем текст
+        screen.textContent = ""; // Очищаем экран
 
         // Задаем случайное направление движения
         const angle = Math.random() * 2 * Math.PI; // Случайный угол
@@ -38,9 +40,12 @@ function stopShaking() {
     if (isShaking) {
         isShaking = false;
 
+        // Останавливаем анимацию
+        cancelAnimationFrame(animationFrame);
+
         // Ждем 2 секунды, затем показываем ответ
         stopTimeout = setTimeout(() => {
-            ball.textContent = getRandomResponse(); // Показываем случайный ответ
+            screen.textContent = getRandomResponse(); // Показываем случайный ответ
         }, 2000);
     }
 }
@@ -81,7 +86,7 @@ function moveBall() {
     ball.style.top = `${y}px`;
 
     // Рекурсивно вызываем функцию для следующего кадра
-    requestAnimationFrame(moveBall);
+    animationFrame = requestAnimationFrame(moveBall);
 }
 
 // Обработчик события тряски телефона
