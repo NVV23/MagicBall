@@ -26,8 +26,7 @@
             font-size: 18px;
             text-align: center;
             position: absolute;
-            transition: transform 1s ease-out, opacity 1s ease-in;
-            opacity: 1;
+            transition: transform 0.3s ease-out, opacity 1s ease-in;
         }
     </style>
 </head>
@@ -51,8 +50,6 @@
             if (totalForce > 20) {
                 shaking = true;
                 moveBall();
-                ball.textContent = ""; // Скрываем текст во время движения
-                ball.style.opacity = "0";
                 clearTimeout(timeout);
             } else if (shaking) {
                 shaking = false;
@@ -62,8 +59,8 @@
         
         function moveBall() {
             if (!shaking) return;
-            const maxX = window.innerWidth - 150;
-            const maxY = window.innerHeight - 150;
+            const maxX = window.innerWidth - 160;
+            const maxY = window.innerHeight - 160;
             const x = Math.random() * maxX;
             const y = Math.random() * maxY;
             const rotate = Math.random() * 360;
