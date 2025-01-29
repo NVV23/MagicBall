@@ -1,21 +1,6 @@
-// Массив с возможными ответами
-const answers = [
-    "Да",
-    "Нет",
-    "Возможно",
-    "Скорее всего да",
-    "Скорее всего нет",
-    "Я устал, спроси позже",
-    "Я не экстрасенс, я просто шар",
-    "Нет, но ты можешь спросить у Google",
-    "Да, хотя нет",
-    "Да нет наверное",
-    "100%",
-    "АУФ",
-    "Маловероятно"
-];
+// Массив с возможными ответами (передается из Flask)
+const answers = {{ answers | tojson }};
 
-// Элементы DOM
 const magicBall = document.getElementById('magic-ball');
 const answerText = document.getElementById('answer');
 
