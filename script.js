@@ -11,7 +11,7 @@ let isShaking = false;
 let stopTimeout;
 let dx = 0, dy = 0; // Направление движения шара
 let animationFrame;
-let speed = 5; // Постоянная скорость шара
+let speed = 3; // Постоянная скорость шара
 let deceleration = 0; // Замедление шара
 
 // Функция для получения случайного ответа
@@ -42,7 +42,7 @@ function stopShaking() {
         isShaking = false;
 
         // Запускаем плавное замедление шара
-        deceleration = speed / 180; // Замедление за 3 секунды (60 кадров/сек * 3 сек)
+        deceleration = speed / 3; // Замедление за 3 секунды (60 кадров/сек * 3 сек)
         slowDownBall();
     }
 }
@@ -61,7 +61,7 @@ function slowDownBall() {
         stopTimeout = setTimeout(() => {
             screen.textContent = getRandomResponse(); // Показываем случайный ответ
             screen.style.opacity = 1; // Плавное появление ответа
-        }, 3000);
+        }, 3);
     }
 }
 
