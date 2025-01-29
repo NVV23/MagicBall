@@ -23,16 +23,32 @@ body, html {
     text-align: center;
     user-select: none;
     position: absolute;
-    transition: transform 0.1s ease-out;
+    transition: transform 0.1s ease-out, opacity 0.5s ease-in-out;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
 /* Анимация вращения шара */
 @keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from { transform: rotate(0deg) translate(-50%, -50%); }
+    to { transform: rotate(360deg) translate(-50%, -50%); }
 }
 
 .ball.shaking {
     animation: spin 0.5s linear infinite;
+}
+
+.ball.stopping {
+    animation: spin 0.5s linear infinite, slowStop 2s ease-out forwards;
+}
+
+@keyframes slowStop {
+    to {
+        animation-play-state: paused;
+    }
+}
+
+.ball.showing-answer {
+    animation: none;
+    transform: rotate(0deg) translate(-50%, -50%);
+    opacity: 1;
 }

@@ -8,6 +8,7 @@ const responses = [
 
 let isShaking = false;
 let shakeTimer;
+let stopTimeout;
 
 // Функция для получения случайного ответа
 function getRandomResponse() {
@@ -18,7 +19,8 @@ function getRandomResponse() {
 function moveBall() {
     const x = Math.random() * (window.innerWidth - ball.offsetWidth);
     const y = Math.random() * (window.innerHeight - ball.offsetHeight);
-    ball.style.transform = `translate(${x}px, ${y}px)`;
+    ball.style.left = `${x}px`;
+    ball.style.top = `${y}px`;
 }
 
 // Функция для начала тряски
@@ -36,8 +38,17 @@ function stopShaking() {
     if (isShaking) {
         clearInterval(shakeTimer); // Останавливаем перемещение шара
         isShaking = false;
-        ball.classList.remove('shaking'); // Убираем класс для вращения
-        ball.textContent = getRandomResponse(); // Показываем случайный ответ
+
+        // Добавляем класс для плавной остановки вращения
+        ball.classList.remove('shaking');
+        ball.classList.add('stopping');
+
+        // Ждем 2 секунды, затем показываем ответ
+        stopTimeout = setTimeout(() => {
+            ball.classList.remove('stopping');
+            ball.classList.add('showing-answer');
+            ball.textContent = getRandomResponse(); // Показываем случайный ответ
+        }, 2000);
     }
 }
 
