@@ -11,8 +11,8 @@ let isShaking = false;
 let stopTimeout;
 let dx = 0, dy = 0; // Направление движения шара
 let animationFrame;
-let speed = 3; // Постоянная скорость шара
-let deceleration = 0; // Замедление шара
+const speed = 5; // Постоянная скорость шара
+let decelerationStartTime = 0; // Время начала замедления
 
 // Функция для получения случайного ответа
 function getRandomResponse() {
@@ -40,28 +40,33 @@ function startShaking() {
 function stopShaking() {
     if (isShaking) {
         isShaking = false;
-
-        // Запускаем плавное замедление шара
-        deceleration = speed / 3; // Замедление за 3 секунды (60 кадров/сек * 3 сек)
+        decelerationStartTime = performance.now(); // Запоминаем время начала замедления
         slowDownBall();
     }
 }
 
 // Функция для замедления шара
 function slowDownBall() {
-    if (Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
-        dx -= (dx / Math.hypot(dx, dy)) * deceleration;
-        dy -= (dy / Math.hypot(dx, dy)) * deceleration;
+    const currentTime = performance.now();
+    const elapsedTime = currentTime - decelerationStartTime; // Время с начала замедления
+    const decelerationDuration = 3000; // Замедление в течение 3 секунд
+
+    if (elapsedTime < decelerationDuration) {
+        // Плавно уменьшаем скорость
+        const progress = elapsedTime / decelerationDuration;
+        dx *= (1 - progress);
+        dy *= (1 - progress);
         moveBall();
     } else {
+        // Полная остановка
         dx = 0;
         dy = 0;
 
-        // Ждем 3 секунды, затем показываем ответ
+        // Показываем ответ через 3 секунды
         stopTimeout = setTimeout(() => {
             screen.textContent = getRandomResponse(); // Показываем случайный ответ
             screen.style.opacity = 1; // Плавное появление ответа
-        }, 3);
+        }, 0); // Ответ показываем сразу после остановки
     }
 }
 
@@ -99,7 +104,7 @@ function moveBall() {
     ball.style.top = `${y}px`;
 
     // Рекурсивно вызываем функцию для следующего кадра
-    if (isShaking || Math.abs(dx) > 0.1 || Math.abs(dy) > 0.1) {
+    if (isShaking || dx !== 0 || dy !== 0) {
         animationFrame = requestAnimationFrame(moveBall);
     }
 }
