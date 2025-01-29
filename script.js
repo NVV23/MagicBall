@@ -11,7 +11,7 @@ let isShaking = false;
 let stopTimeout;
 let dx = 0, dy = 0; // Направление движения шара
 let animationFrame;
-const speed = 5; // Постоянная скорость шара
+const maxSpeed = 5; // Максимальная скорость шара
 let decelerationStartTime = 0; // Время начала замедления
 
 // Функция для получения случайного ответа
@@ -28,8 +28,8 @@ function startShaking() {
 
         // Задаем случайное направление движения
         const angle = Math.random() * 2 * Math.PI; // Случайный угол
-        dx = Math.cos(angle) * speed;
-        dy = Math.sin(angle) * speed;
+        dx = Math.cos(angle) * maxSpeed;
+        dy = Math.sin(angle) * maxSpeed;
 
         // Запускаем движение шара
         moveBall();
@@ -54,8 +54,8 @@ function slowDownBall() {
     if (elapsedTime < decelerationDuration) {
         // Плавно уменьшаем скорость
         const progress = elapsedTime / decelerationDuration;
-        dx *= (1 - progress);
-        dy *= (1 - progress);
+        dx = dx * (1 - progress);
+        dy = dy * (1 - progress);
         moveBall();
     } else {
         // Полная остановка
@@ -110,7 +110,7 @@ function moveBall() {
 // Обработчик события тряски телефона
 window.addEventListener('devicemotion', (event) => {
     const acceleration = event.accelerationIncludingGravity;
-    const threshold = 5; // Порог тряски
+    const threshold = 2; // Уменьшенный порог тряски для более чувствительного реагирования
 
     if (Math.abs(acceleration.x) > threshold || Math.abs(acceleration.y) > threshold || Math.abs(acceleration.z) > threshold) {
         startShaking();
