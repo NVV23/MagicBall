@@ -25,8 +25,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    animation: rotate 1s infinite linear;
-    transform-origin: center;
+    animation: none; /* Initially no rotation */
 }
 
 @keyframes rotate {
