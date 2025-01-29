@@ -13,6 +13,7 @@ let dx = 0, dy = 0; // Направление движения шара
 let animationFrame;
 const maxSpeed = 5; // Максимальная скорость шара
 let decelerationStartTime = 0; // Время начала замедления
+let isStopping = false; // Флаг для замедления
 
 // Функция для получения случайного ответа
 function getRandomResponse() {
@@ -23,6 +24,7 @@ function getRandomResponse() {
 function startShaking() {
     if (!isShaking) {
         isShaking = true;
+        isStopping = false; // Сбрасываем флаг замедления
         screen.textContent = ""; // Очищаем экран
         screen.style.opacity = 0; // Скрываем экран
 
@@ -40,6 +42,7 @@ function startShaking() {
 function stopShaking() {
     if (isShaking) {
         isShaking = false;
+        isStopping = true; // Включаем замедление
         decelerationStartTime = performance.now(); // Запоминаем время начала замедления
         slowDownBall();
     }
@@ -61,6 +64,7 @@ function slowDownBall() {
         // Полная остановка
         dx = 0;
         dy = 0;
+        isStopping = false;
 
         // Показываем ответ
         screen.textContent = getRandomResponse(); // Показываем случайный ответ
@@ -102,7 +106,7 @@ function moveBall() {
     ball.style.top = `${y}px`;
 
     // Рекурсивно вызываем функцию для следующего кадра
-    if (isShaking || dx !== 0 || dy !== 0) {
+    if (isShaking || isStopping) {
         animationFrame = requestAnimationFrame(moveBall);
     }
 }
