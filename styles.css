@@ -1,0 +1,38 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #1a1a1a;
+    font-family: 'Arial', sans-serif;
+    overflow: hidden;
+}
+
+.ball {
+    width: 150px;
+    height: 150px;
+    background-color: #000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: white;
+    text-align: center;
+    user-select: none;
+    position: absolute;
+    transition: transform 0.1s ease-out;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+/* Анимация вращения шара */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.ball.shaking {
+    animation: spin 0.5s linear infinite;
+}
