@@ -1,17 +1,73 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic Ball</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            overflow: hidden;
+        }
+        .ball {
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, #444, #000);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            position: absolute;
+            transition: transform 0.5s ease-out;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div id="magic-ball" class="magic-ball">
-            <p id="answer">Shake me!</p>
-        </div>
-    </div>
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <div class="ball" id="ball">Shake Me</div>
+    <script>
+        const ball = document.getElementById("ball");
+        const answers = [
+            "Да", "Нет", "Возможно", "Скорее всего да", "Скорее всего нет", "Я устал, спроси позже", 
+            "Я не экстрасенс, я просто шар", "Нет, но ты можешь спросить у Google", "Да, хотя нет", 
+            "Да нет наверное", "100%", "АУФ", "Маловероятно"
+        ];
+        
+        let shaking = false;
+        
+        window.addEventListener("devicemotion", (event) => {
+            const acceleration = event.accelerationIncludingGravity;
+            const totalForce = Math.abs(acceleration.x) + Math.abs(acceleration.y) + Math.abs(acceleration.z);
+            
+            if (totalForce > 20) {
+                shaking = true;
+                moveBall();
+            } else if (shaking) {
+                shaking = false;
+                showAnswer();
+            }
+        });
+        
+        function moveBall() {
+            if (!shaking) return;
+            const x = Math.random() * (window.innerWidth - 150);
+            const y = Math.random() * (window.innerHeight - 150);
+            const rotate = Math.random() * 360;
+            
+            ball.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
+            requestAnimationFrame(moveBall);
+        }
+        
+        function showAnswer() {
+            ball.textContent = answers[Math.floor(Math.random() * answers.length)];
+        }
+    </script>
 </body>
 </html>
