@@ -29,7 +29,7 @@ function startShaking() {
         isShaking = true;
         ball.style.opacity = 1; // Делаем шар видимым
         ball.textContent = ""; // Очищаем текст
-        shakeTimer = setInterval(moveBall, 100); // Перемещаем шар каждые 100 мс
+        shakeTimer = setInterval(moveBall, 50); // Увеличили частоту перемещения
     }
 }
 
@@ -49,7 +49,7 @@ function stopShaking() {
 // Обработчик события тряски телефона
 window.addEventListener('devicemotion', (event) => {
     const acceleration = event.accelerationIncludingGravity;
-    const threshold = 15; // Порог тряски
+    const threshold = 5; // Уменьшили порог тряски
 
     if (Math.abs(acceleration.x) > threshold || Math.abs(acceleration.y) > threshold || Math.abs(acceleration.z) > threshold) {
         startShaking();
@@ -61,3 +61,22 @@ window.addEventListener('devicemotion', (event) => {
 // Для тестирования на компьютере
 window.addEventListener('mousedown', startShaking);
 window.addEventListener('mouseup', stopShaking);
+
+// Ограничение по ширине экрана устройства
+function adjustBallPosition() {
+    const maxWidth = window.innerWidth - ball.offsetWidth;
+    const maxHeight = window.innerHeight - ball.offsetHeight;
+    let x = parseFloat(ball.style.left);
+    let y = parseFloat(ball.style.top);
+
+    if (x < 0) x = 0;
+    if (x > maxWidth) x = maxWidth;
+    if (y < 0) y = 0;
+    if (y > maxHeight) y = maxHeight;
+
+    ball.style.left = `${x}px`;
+    ball.style.top = `${y}px`;
+}
+
+// Следим за изменением размеров экрана
+window.addEventListener('resize', adjustBallPosition);
