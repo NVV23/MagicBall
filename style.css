@@ -26,6 +26,7 @@ body {
     justify-content: center;
     align-items: center;
     animation: none; /* Initially no rotation */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5); /* Add some shadow for better appearance */
 }
 
 @keyframes rotate {
