@@ -23,35 +23,7 @@ body, html {
     text-align: center;
     user-select: none;
     position: absolute;
-    transition: transform 0.1s ease-out, opacity 0.5s ease-in-out;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    transition: all 0.5s ease-out;
     opacity: 0; /* Начальная прозрачность */
-}
-
-/* Анимация вращения шара */
-@keyframes spin {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.ball.shaking {
-    animation: spin 0.5s linear infinite;
-    opacity: 1; /* Шар видим при тряске */
-}
-
-.ball.stopping {
-    animation: spin 0.5s linear infinite, slowStop 2s ease-out forwards;
-}
-
-@keyframes slowStop {
-    to {
-        transform: rotate(0deg);
-        animation-play-state: paused;
-    }
-}
-
-.ball.showing-answer {
-    animation: none;
-    transform: rotate(0deg);
-    opacity: 1; /* Плавное появление ответа */
+    transform: translate(-50%, -50%); /* Центрирование шара */
 }

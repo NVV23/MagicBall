@@ -27,8 +27,8 @@ function moveBall() {
 function startShaking() {
     if (!isShaking) {
         isShaking = true;
-        ball.textContent = ""; // Убираем текст
-        ball.classList.add('shaking'); // Добавляем класс для вращения
+        ball.style.opacity = 1; // Делаем шар видимым
+        ball.textContent = ""; // Очищаем текст
         shakeTimer = setInterval(moveBall, 100); // Перемещаем шар каждые 100 мс
     }
 }
@@ -39,14 +39,8 @@ function stopShaking() {
         clearInterval(shakeTimer); // Останавливаем перемещение шара
         isShaking = false;
 
-        // Добавляем класс для плавной остановки вращения
-        ball.classList.remove('shaking');
-        ball.classList.add('stopping');
-
         // Ждем 2 секунды, затем показываем ответ
         stopTimeout = setTimeout(() => {
-            ball.classList.remove('stopping');
-            ball.classList.add('showing-answer');
             ball.textContent = getRandomResponse(); // Показываем случайный ответ
         }, 2000);
     }
