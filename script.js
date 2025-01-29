@@ -1,43 +1,42 @@
-const answers = [
-    "Да", "Нет", "Возможно", "Скорее всего да", "Скорее всего нет",
-    "Я устал, спроси позже", "Я не экстрасенс, я просто шар",
-    "Нет, но ты можешь спросить у Google", "Да, хотя нет", "Да нет наверное",
-    "100%", "АУФ", "Маловероятно"
-];
+// script.js
+const magicBall = document.getElementById('magic-ball');
+const answerElement = document.getElementById('answer');
 
 let isShaking = false;
+let answers = [
+    'Да', 'Нет', 'Возможно', 'Скорее всего да', 'Скорее всего нет',
+    'Я устал, спроси позже', 'Я не экстрасенс, я просто шар',
+    'Нет, но ты можешь спросить у Google', 'Да, хотя нет',
+    'Да нет наверное', '100%', 'АУФ', 'Маловероятно'
+];
 
 function getRandomAnswer() {
     return answers[Math.floor(Math.random() * answers.length)];
 }
 
-function handleShake(event) {
-    if (event.accelerationIncludingGravity.x > 15 || event.accelerationIncludingGravity.y > 15 || event.accelerationIncludingGravity.z > 15) {
-        if (!isShaking) {
-            isShaking = true;
-            const magicBall = document.querySelector('.magic-ball');
-            magicBall.style.animationPlayState = 'running';
-            setTimeout(() => {
-                isShaking = false;
-                magicBall.style.animationPlayState = 'paused';
-                const answerElement = document.querySelector('.answer');
-                answerElement.textContent = getRandomAnswer();
-            }, 1000);
-        }
+function handleShakeEvent() {
+    if (!isShaking) {
+        isShaking = true;
+        magicBall.style.animation = 'rotate 0.1s infinite linear';
+        setTimeout(() => {
+            isShaking = false;
+            magicBall.style.animation = '';
+            const randomAnswer = getRandomAnswer();
+            answerElement.textContent = randomAnswer;
+        }, 1000);
     }
 }
 
-window.addEventListener('devicemotion', handleShake);
+window.addEventListener('devicemotion', (event) => {
+    const acceleration = event.accelerationIncludingGravity;
+    if (Math.abs(acceleration.x) > 1 || Math.abs(acceleration.y) > 1 || Math.abs(acceleration.z) > 1) {
+        handleShakeEvent();
+    }
+});
 
-// For desktop testing
-document.addEventListener('keydown', (e) => {
-    if (e.key === ' ') {
-        const magicBall = document.querySelector('.magic-ball');
-        magicBall.style.animationPlayState = 'running';
-        setTimeout(() => {
-            magicBall.style.animationPlayState = 'paused';
-            const answerElement = document.querySelector('.answer');
-            answerElement.textContent = getRandomAnswer();
-        }, 1000);
+// Для тестирования на десктопе
+document.addEventListener('keydown', (event) => {
+    if (event.key === ' ') {
+        handleShakeEvent();
     }
 });
