@@ -21,7 +21,7 @@ body, html {
     align-items: center;
     position: absolute;
     transform: translate(-50%, -50%); /* Центрирование шара */
-    box-shadow: 0 0 30px rgba(253, 15, 15, 0.5);
+    box-shadow: 0 0 30px rgba(30, 221, 55, 0.5);
 }
 
 .screen {

@@ -7,13 +7,11 @@ const responses = [
     "100%", "АУФ", "Маловероятно"
 ];
 
-let isShaking = false;
-let stopTimeout;
-let dx = 0, dy = 0; // Направление движения шара
+let dx = 0, dy = 0; // Направление и скорость движения шара
 let animationFrame;
-const maxSpeed = 5; // Максимальная скорость шара
-let decelerationStartTime = 0; // Время начала замедления
-let isStopping = false; // Флаг для замедления
+const maxSpeed = 10; // Максимальная скорость шара
+const decelerationRate = 0.95; // Коэффициент замедления
+let isShaking = false;
 
 // Функция для получения случайного ответа
 function getRandomResponse() {
@@ -21,55 +19,42 @@ function getRandomResponse() {
 }
 
 // Функция для начала тряски
-function startShaking() {
-    if (!isShaking) {
-        isShaking = true;
-        isStopping = false; // Сбрасываем флаг замедления
-        screen.textContent = ""; // Очищаем экран
-        screen.style.opacity = 0; // Скрываем экран
+function startShaking(event) {
+    const acceleration = event.accelerationIncludingGravity;
+    const threshold = 2; // Порог тряски
 
-        // Задаем случайное направление движения
+    // Рассчитываем силу тряски
+    const force = Math.hypot(acceleration.x, acceleration.y, acceleration.z);
+
+    if (force > threshold) {
+        isShaking = true;
+
+        // Задаем направление движения в зависимости от силы тряски
         const angle = Math.random() * 2 * Math.PI; // Случайный угол
-        dx = Math.cos(angle) * maxSpeed;
-        dy = Math.sin(angle) * maxSpeed;
+        dx += Math.cos(angle) * force * 0.5; // Увеличиваем скорость в зависимости от силы
+        dy += Math.sin(angle) * force * 0.5;
+
+        // Ограничиваем максимальную скорость
+        const currentSpeed = Math.hypot(dx, dy);
+        if (currentSpeed > maxSpeed) {
+            dx = (dx / currentSpeed) * maxSpeed;
+            dy = (dy / currentSpeed) * maxSpeed;
+        }
+
+        // Очищаем экран
+        screen.textContent = "";
+        screen.style.opacity = 0;
 
         // Запускаем движение шара
-        moveBall();
+        if (!animationFrame) {
+            moveBall();
+        }
     }
 }
 
 // Функция для остановки тряски
 function stopShaking() {
-    if (isShaking) {
-        isShaking = false;
-        isStopping = true; // Включаем замедление
-        decelerationStartTime = performance.now(); // Запоминаем время начала замедления
-        slowDownBall();
-    }
-}
-
-// Функция для замедления шара
-function slowDownBall() {
-    const currentTime = performance.now();
-    const elapsedTime = currentTime - decelerationStartTime; // Время с начала замедления
-    const decelerationDuration = 3000; // Замедление в течение 3 секунд
-
-    if (elapsedTime < decelerationDuration) {
-        // Плавно уменьшаем скорость
-        const progress = elapsedTime / decelerationDuration;
-        dx = dx * (1 - progress);
-        dy = dy * (1 - progress);
-        moveBall();
-    } else {
-        // Полная остановка
-        dx = 0;
-        dy = 0;
-        isStopping = false;
-
-        // Показываем ответ
-        screen.textContent = getRandomResponse(); // Показываем случайный ответ
-        screen.style.opacity = 1; // Плавное появление ответа
-    }
+    isShaking = false;
 }
 
 // Функция для движения шара
@@ -105,29 +90,50 @@ function moveBall() {
     ball.style.left = `${x}px`;
     ball.style.top = `${y}px`;
 
-    // Рекурсивно вызываем функцию для следующего кадра
-    if (isShaking || isStopping) {
-        animationFrame = requestAnimationFrame(moveBall);
+    // Замедление шара, если тряска прекратилась
+    if (!isShaking) {
+        dx *= decelerationRate;
+        dy *= decelerationRate;
+
+        // Если скорость очень маленькая, останавливаем шар
+        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+            dx = 0;
+            dy = 0;
+
+            // Показываем ответ
+            screen.textContent = getRandomResponse();
+            screen.style.opacity = 1;
+            cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+            return;
+        }
     }
+
+    // Рекурсивно вызываем функцию для следующего кадра
+    animationFrame = requestAnimationFrame(moveBall);
 }
 
 // Обработчик события тряски телефона
-let lastShakeTime = 0;
-const shakeCooldown = 500; // Задержка между событиями тряски (в миллисекундах)
+window.addEventListener('devicemotion', (event) => {
+    if (isShaking) {
+        startShaking(event);
+    }
+});
 
+// Обработчик начала тряски
 window.addEventListener('devicemotion', (event) => {
     const acceleration = event.accelerationIncludingGravity;
-    const threshold = 2; // Уменьшенный порог тряски для более чувствительного реагирования
+    const threshold = 2; // Порог тряски
 
-    // Проверяем, прошло ли достаточно времени с последней тряски
-    const currentTime = performance.now();
-    if (currentTime - lastShakeTime < shakeCooldown) return;
-
-    if (Math.abs(acceleration.x) > threshold || Math.abs(acceleration.y) > threshold || Math.abs(acceleration.z) > threshold) {
-        lastShakeTime = currentTime;
-        startShaking();
+    if (Math.hypot(acceleration.x, acceleration.y, acceleration.z) > threshold) {
+        if (!isShaking) {
+            isShaking = true;
+            startShaking(event);
+        }
     } else {
-        stopShaking();
+        if (isShaking) {
+            stopShaking();
+        }
     }
 });
 
