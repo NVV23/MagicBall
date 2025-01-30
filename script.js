@@ -10,9 +10,7 @@ const responses = [
 let dx = 0, dy = 0;
 let isShaking = false;
 let animationFrame;
-let speed = 0;
-const maxSpeed = 8;
-const decelerationRate = 0.95;
+const decelerationRate = 0.9;
 
 // Генерация случайного ответа
 function getRandomResponse() {
@@ -23,14 +21,14 @@ function getRandomResponse() {
 function startShaking() {
     isShaking = true;
 
-    // Генерируем начальное направление
-    const angle = Math.random() * 2 * Math.PI;
-    dx = Math.cos(angle) * maxSpeed;
-    dy = Math.sin(angle) * maxSpeed;
-
     // Убираем старый ответ
     screen.style.opacity = 0;
     screen.textContent = "";
+
+    // Начальные направления движения
+    const angle = Math.random() * 2 * Math.PI;
+    dx = Math.cos(angle) * 10;
+    dy = Math.sin(angle) * 10;
 
     if (!animationFrame) {
         moveBall();
@@ -44,29 +42,41 @@ function stopShaking() {
 
 // Движение шара
 function moveBall() {
-    let x = parseFloat(ball.style.left) || window.innerWidth / 2;
-    let y = parseFloat(ball.style.top) || window.innerHeight / 2;
+    let x = parseFloat(ball.style.left) || (window.innerWidth - ball.offsetWidth) / 2;
+    let y = parseFloat(ball.style.top) || (window.innerHeight - ball.offsetHeight) / 2;
 
     // Обновляем координаты
     x += dx;
     y += dy;
 
     // Отражение от стенок
-    if (x <= 0 || x >= window.innerWidth - ball.offsetWidth) {
+    if (x <= 0) {
+        x = 0;
         dx = -dx;
     }
-    if (y <= 0 || y >= window.innerHeight - ball.offsetHeight) {
+    if (x >= window.innerWidth - ball.offsetWidth) {
+        x = window.innerWidth - ball.offsetWidth;
+        dx = -dx;
+    }
+    if (y <= 0) {
+        y = 0;
+        dy = -dy;
+    }
+    if (y >= window.innerHeight - ball.offsetHeight) {
+        y = window.innerHeight - ball.offsetHeight;
         dy = -dy;
     }
 
+    // Применяем новые координаты
     ball.style.left = `${x}px`;
     ball.style.top = `${y}px`;
 
+    // Плавная остановка, если тряска прекращена
     if (!isShaking) {
         dx *= decelerationRate;
         dy *= decelerationRate;
 
-        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
             dx = 0;
             dy = 0;
             screen.textContent = getRandomResponse();
@@ -97,5 +107,7 @@ window.addEventListener('devicemotion', (event) => {
 });
 
 // Установка начального положения
-ball.style.left = `${window.innerWidth / 2 - ball.offsetWidth / 2}px`;
-ball.style.top = `${window.innerHeight / 2 - ball.offsetHeight / 2}px`;
+const centerX = (window.innerWidth - ball.offsetWidth) / 2;
+const centerY = (window.innerHeight - ball.offsetHeight) / 2;
+ball.style.left = `${centerX}px`;
+ball.style.top = `${centerY}px`;

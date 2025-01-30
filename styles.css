@@ -14,13 +14,12 @@ body, html {
 .ball {
     width: 150px;
     height: 150px;
-    background: radial-gradient(circle, #f0f0f0 20%, #333 90%);
+    background: radial-gradient(circle, #f0f0f0 20%, #3f13a5 90%);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     position: absolute;
-    transform: translate(-50%, -50%);
     box-shadow: 0 0 30px rgba(30, 221, 55, 0.5);
 }
 
