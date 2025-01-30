@@ -112,11 +112,19 @@ function moveBall() {
 }
 
 // Обработчик события тряски телефона
+let lastShakeTime = 0;
+const shakeCooldown = 500; // Задержка между событиями тряски (в миллисекундах)
+
 window.addEventListener('devicemotion', (event) => {
     const acceleration = event.accelerationIncludingGravity;
     const threshold = 2; // Уменьшенный порог тряски для более чувствительного реагирования
 
+    // Проверяем, прошло ли достаточно времени с последней тряски
+    const currentTime = performance.now();
+    if (currentTime - lastShakeTime < shakeCooldown) return;
+
     if (Math.abs(acceleration.x) > threshold || Math.abs(acceleration.y) > threshold || Math.abs(acceleration.z) > threshold) {
+        lastShakeTime = currentTime;
         startShaking();
     } else {
         stopShaking();
