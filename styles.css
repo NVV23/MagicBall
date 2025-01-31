@@ -26,15 +26,16 @@ body {
 .ball {
     width: 150px;
     height: 150px;
-    background: radial-gradient(circle, rgba(255, 111, 97, 0.8), rgba(255, 111, 97, 0));
+    background: #ff6f61; /* Однотонный цвет */
     border-radius: 50%;
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: none;
+    box-shadow: 0 0 20px rgba(255, 111, 97, 0.3); /* Мягкое свечение по умолчанию */
 }
 
+/* Анимация свечения */
 .ball.glow-active {
     animation: glow 1.5s infinite alternate;
 }

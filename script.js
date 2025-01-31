@@ -16,7 +16,7 @@ let x = window.innerWidth / 2 - 75, y = window.innerHeight / 2 - 75;
 let dx = 0, dy = 0, isStopped = true, answerShown = false, isInitialized = false;
 let startTime = 0;
 
-const initialSpeed = 13, deceleration = 0.987, constantSpeedDuration = 2000;
+const initialSpeed = 12, deceleration = 0.99, constantSpeedDuration = 1500;
 
 // Установка начального положения шара
 function setInitialPosition() {
@@ -42,7 +42,7 @@ function startMovement() {
     dx = direction.dx * initialSpeed;
     dy = direction.dy * initialSpeed;
     startTime = Date.now();
-    ball.classList.remove('glow-active');
+    ball.classList.remove('glow-active'); // Убираем яркое свечение при движении
 }
 
 // Движение шара
@@ -75,7 +75,7 @@ function moveBall() {
         if (!answerShown) {
             answerElement.textContent = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
             answerElement.classList.add('show');
-            ball.classList.add('glow-active');
+            ball.classList.add('glow-active'); // Добавляем яркое свечение при остановке
             answerShown = true;
         }
     }
@@ -92,7 +92,7 @@ function preloadAudio() {
 
 // Обработчик тряски телефона
 if (window.DeviceMotionEvent) {
-    let lastShakeTime = 0, shakeCooldown = 300;
+    let lastShakeTime = 0, shakeCooldown = 400;
 
     window.addEventListener('devicemotion', (event) => {
         if (!isInitialized || Date.now() - lastShakeTime < shakeCooldown) return;
