@@ -16,18 +16,21 @@ let y = window.innerHeight / 2 - 75;
 let dx = 0;
 let dy = 0;
 let shaking = false;
+let isStopped = true; // Флаг для отслеживания остановки шара
 
 // Функция для получения случайного направления
 function getRandomDirection() {
-    return (Math.random() - 0.5) * 10;
+    return (Math.random() - 0.5) * 10; // Случайное направление от -5 до 5
 }
 
 // Обнаружение тряски
 function shakeDetected() {
-    if (!shaking) {
+    if (!shaking && isStopped) {
         shaking = true;
+        isStopped = false; // Шар начал движение
         dx = getRandomDirection();
         dy = getRandomDirection();
+        answerElement.classList.remove('show'); // Скрываем ответ при начале движения
     }
 }
 
@@ -38,7 +41,7 @@ function stopShake() {
 
 // Движение шара
 function moveBall() {
-    if (shaking) {
+    if (shaking || !isStopped) {
         x += dx;
         y += dy;
 
@@ -49,19 +52,14 @@ function moveBall() {
         // Обновление позиции шара
         ball.style.left = x + 'px';
         ball.style.top = y + 'px';
-    } else {
+
         // Замедление шара
-        dx *= 0.95;
-        dy *= 0.95;
-
-        x += dx;
-        y += dy;
-
-        ball.style.left = x + 'px';
-        ball.style.top = y + 'px';
+        dx *= 0.98;
+        dy *= 0.98;
 
         // Если шар почти остановился
         if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+            isStopped = true; // Шар остановился
             showAnswer();
         }
     }
@@ -71,9 +69,11 @@ function moveBall() {
 
 // Показать случайный ответ
 function showAnswer() {
-    const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
-    answerElement.textContent = randomAnswer;
-    answerElement.classList.add('show');
+    if (isStopped) {
+        const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
+        answerElement.textContent = randomAnswer;
+        answerElement.classList.add('show');
+    }
 }
 
 // Начало анимации
