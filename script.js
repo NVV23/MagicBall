@@ -99,15 +99,9 @@ if (window.DeviceMotionEvent) {
         // Вычисляем общее ускорение
         const acceleration = Math.sqrt(x * x + y * y + z * z);
 
-        // Проверяем, превышает ли ускорение пороговое значение
+        // Если ускорение превышает пороговое значение, считаем, что устройство трясут
         if (acceleration > shakeThreshold) {
-            const now = Date.now();
-
-            // Проверяем задержку между трясками
-            if (now - lastShakeTime > shakeCooldown) {
-                startShake(acceleration); // Запускаем движение шара
-                lastShakeTime = now; // Обновляем время последней тряски
-            }
+            shaking = true; // Продолжаем движение шара
         } else {
             shaking = false; // Прекращаем тряску, если ускорение ниже порога
         }
@@ -116,12 +110,23 @@ if (window.DeviceMotionEvent) {
     alert("Ваше устройство не поддерживает обнаружение тряски. Используйте кнопку ниже.");
 }
 
-// Обработчик кнопки "Имитировать тряску"
-shakeButton.addEventListener('click', () => {
-    if (isStopped) {
-        const simulatedAcceleration = 30; // Имитируем среднюю силу тряски
-        startShake(simulatedAcceleration);
-    }
+// Обработчики кнопки "Имитировать тряску"
+let simulatedShaking = false; // Флаг для имитации тряски кнопкой
+
+shakeButton.addEventListener('mousedown', () => {
+    simulatedShaking = true;
+    const simulatedAcceleration = 30; // Имитируем среднюю силу тряски
+    startShake(simulatedAcceleration);
+});
+
+shakeButton.addEventListener('mouseup', () => {
+    simulatedShaking = false;
+    shaking = false; // Прекращаем тряску
+});
+
+shakeButton.addEventListener('mouseleave', () => {
+    simulatedShaking = false;
+    shaking = false; // Прекращаем тряску, если курсор покинул кнопку
 });
 
 // Установка начального положения шара
