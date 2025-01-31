@@ -19,10 +19,12 @@ let dx = 0;
 let dy = 0;
 let isStopped = true; // Флаг для остановки шара
 let answerShown = false; // Флаг для показа ответа
+let startTime = null; // Время начала движения
 
 // Параметры движения
 const initialSpeed = 20; // Начальная скорость шара
 const deceleration = 0.99; // Коэффициент замедления
+const constantSpeedDuration = 2000; // Время (в миллисекундах), в течение которого шар движется с постоянной скоростью
 
 // Устанавливаем начальное положение шара
 function setInitialPosition() {
@@ -45,7 +47,16 @@ function startMovement() {
         dx = getRandomDirection() * initialSpeed;
         dy = getRandomDirection() * initialSpeed;
         answerElement.classList.remove('show'); // Скрываем ответ при начале движения
+        startTime = Date.now(); // Запоминаем время начала движения
     }
+}
+
+// Показать случайный ответ
+function showAnswer() {
+    const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
+    answerElement.textContent = randomAnswer;
+    answerElement.classList.add('show');
+    ball.classList.add('glow-active'); // Добавляем свечение при остановке
 }
 
 // Движение шара
@@ -76,9 +87,13 @@ function moveBall() {
         ball.style.left = `${x}px`;
         ball.style.top = `${y}px`;
 
-        // Замедление шара
-        dx *= deceleration;
-        dy *= deceleration;
+        // Проверяем, прошло ли 2 секунды с момента начала движения
+        const currentTime = Date.now();
+        if (currentTime - startTime > constantSpeedDuration) {
+            // Применяем замедление после 2 секунд
+            dx *= deceleration;
+            dy *= deceleration;
+        }
 
         // Если шар почти остановился
         if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
@@ -87,17 +102,12 @@ function moveBall() {
                 showAnswer();
                 answerShown = true; // Ответ показан
             }
+        } else {
+            ball.classList.remove('glow-active'); // Убираем свечение при движении
         }
     }
 
     requestAnimationFrame(moveBall);
-}
-
-// Показать случайный ответ
-function showAnswer() {
-    const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
-    answerElement.textContent = randomAnswer;
-    answerElement.classList.add('show');
 }
 
 // Обработчик события devicemotion

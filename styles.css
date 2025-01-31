@@ -33,6 +33,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+/* Анимация свечения */
+.ball.glow-active {
     animation: glow 1.5s infinite alternate;
 }
 
