@@ -13,6 +13,7 @@ body {
     align-items: center;
     overflow: hidden;
     font-family: 'Arial', sans-serif;
+    position: relative;
 }
 
 .container {
@@ -58,4 +59,27 @@ body {
 
 .answer.show {
     opacity: 1;
+}
+
+/* Кнопка имитации тряски */
+#shakeButton {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #ff6f61;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 111, 97, 0.6);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#shakeButton:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 111, 97, 0.8);
 }

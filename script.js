@@ -9,6 +9,7 @@ const ANSWERS = [
 // Элементы DOM
 const ball = document.getElementById('ball');
 const answerElement = document.getElementById('answer');
+const shakeButton = document.getElementById('shakeButton');
 
 // Позиция и направление шара
 let x = window.innerWidth / 2 - 75; // Центр экрана
@@ -101,8 +102,13 @@ if (window.DeviceMotionEvent) {
         }
     });
 } else {
-    alert("Ваше устройство не поддерживает обнаружение тряски. Пожалуйста, используйте другое устройство.");
+    alert("Ваше устройство не поддерживает обнаружение тряски. Используйте кнопку ниже.");
 }
+
+// Обработчик кнопки "Имитировать тряску"
+shakeButton.addEventListener('click', () => {
+    shakeDetected();
+});
 
 // Начало анимации
 moveBall();
