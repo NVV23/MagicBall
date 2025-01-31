@@ -22,9 +22,9 @@ let answerShown = false; // Флаг для показа ответа
 let startTime = null; // Время начала движения
 
 // Параметры движения
-const initialSpeed = 20; // Начальная скорость шара
-const deceleration = 0.99; // Коэффициент замедления
-const constantSpeedDuration = 2000; // Время (в миллисекундах), в течение которого шар движется с постоянной скоростью
+const initialSpeed = 15; // Начальная скорость шара
+const deceleration = 0.95; // Коэффициент замедления
+const constantSpeedDuration = 3000; // Время (в миллисекундах), в течение которого шар движется с постоянной скоростью
 
 // Устанавливаем начальное положение шара
 function setInitialPosition() {
@@ -34,9 +34,28 @@ function setInitialPosition() {
     ball.style.top = `${y}px`;
 }
 
-// Функция для получения случайного направления
+// Функция для получения случайного направления по диагоналям с отклонением
 function getRandomDirection() {
-    return (Math.random() - 0.5) * 2; // Случайное направление (-1..1)
+    // Основные углы для четырёх диагоналей (в радианах)
+    const baseAngles = [
+        Math.PI / 4,   // 45° (право-верх)
+        3 * Math.PI / 4, // 135° (лево-верх)
+        5 * Math.PI / 4, // 225° (лево-низ)
+        7 * Math.PI / 4  // 315° (право-низ)
+    ];
+
+    // Выбираем случайный базовый угол
+    const baseAngle = baseAngles[Math.floor(Math.random() * baseAngles.length)];
+
+    // Добавляем случайное отклонение в пределах ±10 градусов (в радианах)
+    const deviation = (Math.random() - 0.5) * (10 * Math.PI / 180); // ±10°
+    const angle = baseAngle + deviation;
+
+    // Преобразуем угол в направление (dx, dy)
+    return {
+        dx: Math.cos(angle),
+        dy: Math.sin(angle)
+    };
 }
 
 // Начать движение шара
@@ -44,10 +63,15 @@ function startMovement() {
     if (isStopped) {
         isStopped = false; // Шар начал движение
         answerShown = false; // Сбрасываем флаг показа ответа
-        dx = getRandomDirection() * initialSpeed;
-        dy = getRandomDirection() * initialSpeed;
+
+        // Получаем случайное направление с отклонением
+        const direction = getRandomDirection();
+        dx = direction.dx * initialSpeed;
+        dy = direction.dy * initialSpeed;
+
         answerElement.classList.remove('show'); // Скрываем ответ при начале движения
         startTime = Date.now(); // Запоминаем время начала движения
+        ball.classList.remove('glow-active'); // Убираем свечение при движении
     }
 }
 
