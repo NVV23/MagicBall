@@ -12,7 +12,7 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
     position: relative;
 }
 
@@ -26,16 +26,15 @@ body {
 .ball {
     width: 150px;
     height: 150px;
-    background: radial-gradient(circle, rgba(255, 111, 97, 0.8), rgba(255, 111, 97, 0)); /* Градиент с прозрачностью */
+    background: radial-gradient(circle, rgba(255, 111, 97, 0.8), rgba(255, 111, 97, 0));
     border-radius: 50%;
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: none; /* Убираем постоянное свечение */
+    box-shadow: none;
 }
 
-/* Анимация свечения */
 .ball.glow-active {
     animation: glow 1.5s infinite alternate;
 }
@@ -68,39 +67,36 @@ body {
 /* Кнопка "Запуск" */
 #shakeButton {
     position: absolute;
-    bottom: 50%; /* Ниже середины экрана */
+    bottom: 50%;
     left: 50%;
-    transform: translate(-50%, 50%); /* Центрируем по горизонтали и сдвигаем вниз */
-    padding: 30px 60px; /* Увеличиваем размер кнопки */
-    font-size: 24px; /* Увеличиваем текст */
+    transform: translate(-50%, 50%);
+    padding: 30px 60px;
+    font-size: 24px;
     font-weight: bold;
     color: #fff;
     background-color: #ff6f61;
     border: none;
-    border-radius: 10px; /* Скругляем углы */
+    border-radius: 10px;
     cursor: pointer;
     box-shadow: 0 6px 15px rgba(255, 111, 97, 0.6);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    user-select: none; /* Запрещаем выделение текста */
-    -webkit-user-select: none; /* Для Safari */
+    user-select: none;
 }
 
 #shakeButton:hover {
-    transform: translate(-50%, 50%) scale(1.05); /* Увеличиваем при наведении */
+    transform: translate(-50%, 50%) scale(1.05);
     box-shadow: 0 8px 20px rgba(255, 111, 97, 0.8);
 }
 
-/* Исходное состояние кнопки после запуска */
 #shakeButton.initial-hidden {
-    display: none; /* Скрываем кнопку */
+    display: none;
 }
 
-/* Возвращение к стандартному состоянию */
 #shakeButton.final-state {
     position: absolute;
-    bottom: 20px; /* Внизу экрана */
+    bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    padding: 10px 20px; /* Возвращаем размер */
-    font-size: 16px; /* Возвращаем текст */
+    padding: 10px 20px;
+    font-size: 16px;
 }
