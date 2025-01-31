@@ -1,82 +1,141 @@
-// Список ответов
-const ANSWERS = [
+const ball = document.getElementById('ball');
+const screen = document.getElementById('screen');
+const responses = [
     "Да", "Нет", "Возможно", "Скорее всего да", "Скорее всего нет",
     "Я устал, спроси позже", "Я не экстрасенс, я просто шар",
-    "А сам как думаешь?", "Да, хотя нет", "Да нет наверное",
+    "Нет, но ты можешь спросить у Google", "Да, хотя нет", "Да нет наверное",
     "100%", "АУФ", "Маловероятно"
 ];
 
-// Элементы DOM
-const ball = document.getElementById('ball');
-const answerElement = document.getElementById('answer');
+let dx = 0, dy = 0; // Направление и скорость движения шара
+let animationFrame;
+const maxSpeed = 10; // Максимальная скорость шара
+const decelerationRate = 0.95; // Коэффициент замедления
+let isShaking = false;
+let lastShakeTime = 0;
+const shakeCooldown = 100; // Задержка между обновлениями тряски (в миллисекундах)
 
-// Позиция и направление шара
-let x = window.innerWidth / 2 - 75; // Центр экрана
-let y = window.innerHeight / 2 - 75;
-let dx = 0;
-let dy = 0;
-let shaking = false;
-let isStopped = true; // Флаг для отслеживания остановки шара
-
-// Функция для получения случайного направления
-function getRandomDirection() {
-    return (Math.random() - 0.5) * 10; // Случайное направление от -5 до 5
+// Функция для получения случайного ответа
+function getRandomResponse() {
+    return responses[Math.floor(Math.random() * responses.length)];
 }
 
-// Обнаружение тряски
-function shakeDetected() {
-    if (!shaking && isStopped) {
-        shaking = true;
-        isStopped = false; // Шар начал движение
-        dx = getRandomDirection();
-        dy = getRandomDirection();
-        answerElement.classList.remove('show'); // Скрываем ответ при начале движения
+// Функция для начала тряски
+function startShaking(event) {
+    const acceleration = event.accelerationIncludingGravity;
+    const threshold = 2; // Порог тряски
+
+    // Рассчитываем силу тряски
+    const force = Math.hypot(acceleration.x, acceleration.y, acceleration.z);
+
+    if (force > threshold) {
+        isShaking = true;
+
+        // Задаем направление движения в зависимости от силы тряски
+        const angle = Math.random() * 2 * Math.PI; // Случайный угол
+        dx += Math.cos(angle) * force * 0.1; // Плавное увеличение скорости
+        dy += Math.sin(angle) * force * 0.1;
+
+        // Ограничиваем максимальную скорость
+        const currentSpeed = Math.hypot(dx, dy);
+        if (currentSpeed > maxSpeed) {
+            dx = (dx / currentSpeed) * maxSpeed;
+            dy = (dy / currentSpeed) * maxSpeed;
+        }
+
+        // Очищаем экран
+        screen.textContent = "";
+        screen.style.opacity = 0;
+
+        // Запускаем движение шара
+        if (!animationFrame) {
+            moveBall();
+        }
     }
 }
 
-// Остановка тряски
-function stopShake() {
-    shaking = false;
+// Функция для остановки тряски
+function stopShaking() {
+    isShaking = false;
 }
 
-// Движение шара
+// Функция для движения шара
 function moveBall() {
-    if (shaking || !isStopped) {
-        x += dx;
-        y += dy;
+    // Получаем текущие координаты шара
+    let x = parseFloat(ball.style.left) || window.innerWidth / 2;
+    let y = parseFloat(ball.style.top) || window.innerHeight / 2;
 
-        // Отскок от стенок
-        if (x <= 0 || x >= window.innerWidth - 150) dx = -dx;
-        if (y <= 0 || y >= window.innerHeight - 150) dy = -dy;
+    // Обновляем координаты
+    x += dx;
+    y += dy;
 
-        // Обновление позиции шара
-        ball.style.left = x + 'px';
-        ball.style.top = y + 'px';
+    // Проверяем столкновение с границами экрана
+    const ballRadius = ball.offsetWidth / 2;
+    if (x < ballRadius) {
+        x = ballRadius;
+        dx = Math.abs(dx); // Отскок от левой стенки
+    }
+    if (x > window.innerWidth - ballRadius) {
+        x = window.innerWidth - ballRadius;
+        dx = -Math.abs(dx); // Отскок от правой стенки
+    }
+    if (y < ballRadius) {
+        y = ballRadius;
+        dy = Math.abs(dy); // Отскок от верхней стенки
+    }
+    if (y > window.innerHeight - ballRadius) {
+        y = window.innerHeight - ballRadius;
+        dy = -Math.abs(dy); // Отскок от нижней стенки
+    }
 
-        // Замедление шара
-        dx *= 0.98;
-        dy *= 0.98;
+    // Применяем новые координаты
+    ball.style.left = `${x}px`;
+    ball.style.top = `${y}px`;
 
-        // Если шар почти остановился
+    // Замедление шара, если тряска прекратилась
+    if (!isShaking) {
+        dx *= decelerationRate;
+        dy *= decelerationRate;
+
+        // Если скорость очень маленькая, останавливаем шар
         if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
-            isStopped = true; // Шар остановился
-            showAnswer();
+            dx = 0;
+            dy = 0;
+
+            // Показываем ответ
+            screen.textContent = getRandomResponse();
+            screen.style.opacity = 1;
+            cancelAnimationFrame(animationFrame);
+            animationFrame = null;
+            return;
         }
     }
 
-    requestAnimationFrame(moveBall);
+    // Рекурсивно вызываем функцию для следующего кадра
+    animationFrame = requestAnimationFrame(moveBall);
 }
 
-// Показать случайный ответ
-function showAnswer() {
-    if (isStopped) {
-        const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
-        answerElement.textContent = randomAnswer;
-        answerElement.classList.add('show');
+// Обработчик события тряски телефона
+window.addEventListener('devicemotion', (event) => {
+    const currentTime = performance.now();
+    if (currentTime - lastShakeTime < shakeCooldown) return; // Игнорируем слишком частые события
+    lastShakeTime = currentTime;
+
+    const acceleration = event.accelerationIncludingGravity;
+    const threshold = 2; // Порог тряски
+
+    if (Math.hypot(acceleration.x, acceleration.y, acceleration.z) > threshold) {
+        if (!isShaking) {
+            isShaking = true;
+        }
+        startShaking(event);
+    } else {
+        if (isShaking) {
+            stopShaking();
+        }
     }
-}
+});
 
-// Начало анимации
-window.addEventListener('devicemotion', () => shakeDetected());
-setTimeout(stopShake, 2000); // Прекращение тряски через 2 секунды
-moveBall();
+// Инициализация начального положения шара
+ball.style.left = `${window.innerWidth / 2}px`;
+ball.style.top = `${window.innerHeight / 2}px`;
