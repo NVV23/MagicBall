@@ -27,7 +27,7 @@ const shakeCooldown = 1000; // Задержка между трясками (в 
 
 // Функция для получения случайного направления
 function getRandomDirection() {
-    return (Math.random() - 0.5) * 10; // Случайное направление от -5 до 5
+    return (Math.random() - 0.5) * 20; // Увеличиваем скорость движения
 }
 
 // Обнаружение тряски
@@ -61,12 +61,14 @@ function moveBall() {
         ball.style.left = x + 'px';
         ball.style.top = y + 'px';
 
-        // Замедление шара
-        dx *= 0.98;
-        dy *= 0.98;
+        // Замедление шара только если тряска прекратилась
+        if (!shaking) {
+            dx *= 0.95; // Увеличиваем коэффициент замедления
+            dy *= 0.95;
+        }
 
         // Если шар почти остановился
-        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1 && shaking === false) {
+        if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5 && shaking === false) {
             isStopped = true; // Шар остановился
             if (!answerShown) {
                 showAnswer();
