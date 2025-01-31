@@ -23,6 +23,7 @@ let answerShown = false; // Флаг для показа ответа
 // Параметры тряски
 const shakeThreshold = 15; // Пороговое значение для тряски
 const shakeSpeed = 10; // Постоянная скорость шара во время тряски
+const shakeCooldown = 100; // Задержка между проверками тряски (в миллисекундах)
 let lastShakeTime = 0;
 
 // Устанавливаем начальное положение шара
@@ -123,28 +124,40 @@ function handleDeviceMotion(event) {
     // Вычисляем общее ускорение
     const acceleration = Math.sqrt(x * x + y * y + z * z);
 
+    const now = Date.now();
+
     // Если ускорение превышает пороговое значение, считаем, что устройство трясут
     if (acceleration > shakeThreshold) {
+        lastShakeTime = now; // Обновляем время последней тряски
         startShake(); // Начинаем тряску
-    } else {
-        stopShake(); // Прекращаем тряску
+    }
+
+    // Если прошло больше задержки без тряски, прекращаем тряску
+    if (now - lastShakeTime > shakeCooldown) {
+        stopShake();
     }
 }
 
 // Обработчики кнопки "Имитировать тряску"
+let simulatedShaking = false; // Флаг для имитации тряски кнопкой
+
 shakeButton.addEventListener('touchstart', () => {
+    simulatedShaking = true;
     startShake(); // Начинаем тряску при касании
 });
 
 shakeButton.addEventListener('touchend', () => {
+    simulatedShaking = false;
     stopShake(); // Прекращаем тряску при отпускании
 });
 
 shakeButton.addEventListener('mousedown', () => {
+    simulatedShaking = true;
     startShake(); // Начинаем тряску при нажатии на ПК
 });
 
 shakeButton.addEventListener('mouseup', () => {
+    simulatedShaking = false;
     stopShake(); // Прекращаем тряску при отпускании на ПК
 });
 
