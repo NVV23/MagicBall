@@ -13,10 +13,10 @@ const bounceSound = document.getElementById('bounceSound');
 
 // Параметры движения
 let x = window.innerWidth / 2 - 75, y = window.innerHeight / 2 - 75;
-let dx = 0, dy = 0, isStopped = true, answerShown = false, isInitialized = false;
+let dx = 0, dy = 0, isStopped = true, answerShown = false;
 let startTime = 0;
 
-const initialSpeed = 13, deceleration = 0.99, constantSpeedDuration = 1500;
+const initialSpeed = 13, deceleration = 0.99, constantSpeedDuration = 1000;
 
 // Установка начального положения шара
 function setInitialPosition() {
@@ -34,7 +34,7 @@ function getRandomDirection() {
 
 // Начать движение шара
 function startMovement() {
-    if (!isInitialized || !isStopped) return;
+    if (!isStopped) return;
 
     console.log("Шар начал движение!"); // Отладочное сообщение
 
@@ -49,7 +49,7 @@ function startMovement() {
 
 // Движение шара
 function moveBall() {
-    if (!isInitialized || isStopped) return;
+    if (isStopped) return;
 
     x += dx;
     y += dy;
@@ -94,10 +94,10 @@ function preloadAudio() {
 
 // Обработчик тряски телефона
 if (window.DeviceMotionEvent) {
-    let lastShakeTime = 0, shakeCooldown = 400;
+    let lastShakeTime = 0, shakeCooldown = 300;
 
     window.addEventListener('devicemotion', (event) => {
-        if (!isInitialized || Date.now() - lastShakeTime < shakeCooldown) return;
+        if (Date.now() - lastShakeTime < shakeCooldown) return;
 
         const acceleration = Math.sqrt(
             event.accelerationIncludingGravity.x ** 2 +
@@ -113,24 +113,9 @@ if (window.DeviceMotionEvent) {
     });
 }
 
-// Обработчики кнопки "Запуск"
-shakeButton.addEventListener('touchstart', handleButtonClick);
-shakeButton.addEventListener('mousedown', handleButtonClick);
-
-function handleButtonClick() {
-    if (!isInitialized) {
-        console.log("Кнопка 'Запуск' нажата!"); // Отладочное сообщение
-        isInitialized = true;
-        shakeButton.classList.add('initial-hidden');
-        setTimeout(() => {
-            shakeButton.classList.remove('initial-hidden');
-            shakeButton.classList.add('final-state');
-        }, 1000);
-    } else {
-        console.log("Кнопка нажата для запуска движения!"); // Отладочное сообщение
-        startMovement();
-    }
-}
+// Обработчики кнопки "Имитировать тряску"
+shakeButton.addEventListener('touchstart', () => startMovement());
+shakeButton.addEventListener('mousedown', () => startMovement());
 
 // Инициализация
 setInitialPosition();

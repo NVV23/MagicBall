@@ -26,16 +26,15 @@ body {
 .ball {
     width: 150px;
     height: 150px;
-    background: rgb(255, 111, 97); /* Однотонный цвет */
+    background: #ff6f61; /* Однотонный цвет */
     border-radius: 50%;
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 20px rgba(255, 111, 97, 0.3); /* Мягкое свечение по умолчанию */
+    box-shadow: 0 0 20px rgba(255, 111, 97, 0.4); /* Мягкое свечение по умолчанию */
 }
 
-/* Анимация свечения */
 .ball.glow-active {
     animation: glow 1.5s infinite alternate;
 }
@@ -65,39 +64,26 @@ body {
     opacity: 1;
 }
 
-/* Кнопка "Запуск" */
+/* Кнопка имитации тряски */
 #shakeButton {
-    position: absolute;
-    bottom: 50%;
-    left: 50%;
-    transform: translate(-50%, 50%);
-    padding: 30px 60px;
-    font-size: 24px;
-    font-weight: bold;
-    color: #fff;
-    background-color: #ff6f61;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    box-shadow: 0 6px 15px rgba(255, 111, 97, 0.6);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    user-select: none;
-}
-
-#shakeButton:hover {
-    transform: translate(-50%, 50%) scale(1.05);
-    box-shadow: 0 8px 20px rgba(255, 111, 97, 0.8);
-}
-
-#shakeButton.initial-hidden {
-    display: none;
-}
-
-#shakeButton.final-state {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
     padding: 10px 20px;
     font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #ff6f61;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 111, 97, 0.6);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    user-select: none;
+}
+
+#shakeButton:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 111, 97, 0.8);
 }
