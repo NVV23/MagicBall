@@ -31,13 +31,14 @@ function getRandomDirection() {
 }
 
 // Обнаружение тряски
-function shakeDetected() {
+function shakeDetected(acceleration) {
     if (!shaking && isStopped) {
         shaking = true;
         isStopped = false; // Шар начал движение
         answerShown = false; // Сбрасываем флаг показа ответа
-        dx = getRandomDirection();
-        dy = getRandomDirection();
+        const speedFactor = Math.min(acceleration / 50, 3); // Ограничение максимальной скорости
+        dx = getRandomDirection() * speedFactor;
+        dy = getRandomDirection() * speedFactor;
         answerElement.classList.remove('show'); // Скрываем ответ при начале движения
     }
 }
@@ -101,7 +102,7 @@ if (window.DeviceMotionEvent) {
 
             // Проверяем задержку между трясками
             if (now - lastShakeTime > shakeCooldown) {
-                shakeDetected();
+                shakeDetected(acceleration);
                 lastShakeTime = now; // Обновляем время последней тряски
             }
         } else {
@@ -115,7 +116,8 @@ if (window.DeviceMotionEvent) {
 // Обработчик кнопки "Имитировать тряску"
 shakeButton.addEventListener('click', () => {
     if (isStopped) {
-        shakeDetected();
+        const simulatedAcceleration = 30; // Имитируем среднюю силу тряски
+        shakeDetected(simulatedAcceleration);
     }
 });
 
