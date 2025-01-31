@@ -21,9 +21,7 @@ let isStopped = true; // Флаг для отслеживания останов
 let answerShown = false; // Флаг для отслеживания показа ответа
 
 // Параметры тряски
-let lastShakeTime = 0;
 const shakeThreshold = 15; // Пороговое значение для тряски
-const shakeCooldown = 1000; // Задержка между трясками (в миллисекундах)
 
 // Функция для получения случайного направления
 function getRandomDirection() {
@@ -41,11 +39,6 @@ function shakeDetected(acceleration) {
         dy = getRandomDirection() * speedFactor;
         answerElement.classList.remove('show'); // Скрываем ответ при начале движения
     }
-}
-
-// Остановка тряски
-function stopShake() {
-    shaking = false;
 }
 
 // Движение шара
@@ -96,17 +89,14 @@ if (window.DeviceMotionEvent) {
         // Вычисляем общее ускорение
         const acceleration = Math.sqrt(x * x + y * y + z * z);
 
-        // Проверяем, превышает ли ускорение пороговое значение
+        // Если ускорение превышает пороговое значение, считаем, что устройство трясут
         if (acceleration > shakeThreshold) {
-            const now = Date.now();
-
-            // Проверяем задержку между трясками
-            if (now - lastShakeTime > shakeCooldown) {
-                shakeDetected(acceleration);
-                lastShakeTime = now; // Обновляем время последней тряски
-            }
+            shaking = true; // Продолжаем движение шара
+            const speedFactor = Math.min(acceleration / 50, 3); // Ограничение максимальной скорости
+            dx = getRandomDirection() * speedFactor;
+            dy = getRandomDirection() * speedFactor;
         } else {
-            stopShake(); // Прекращаем тряску, если ускорение ниже порога
+            shaking = false; // Прекращаем тряску, если ускорение ниже порога
         }
     });
 } else {
