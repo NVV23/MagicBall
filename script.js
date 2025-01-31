@@ -22,8 +22,8 @@ let answerShown = false; // Флаг для показа ответа
 let startTime = null; // Время начала движения
 
 // Параметры движения
-const initialSpeed = 15; // Начальная скорость шара
-const deceleration = 0.95; // Коэффициент замедления
+const initialSpeed = 13; // Начальная скорость шара
+const deceleration = 0.97; // Коэффициент замедления
 const constantSpeedDuration = 3000; // Время (в миллисекундах), в течение которого шар движется с постоянной скоростью
 
 // Устанавливаем начальное положение шара
@@ -120,7 +120,7 @@ function moveBall() {
         }
 
         // Если шар почти остановился
-        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+        if (Math.abs(dx) < 0.2 && Math.abs(dy) < 0.2) {
             isStopped = true; // Шар остановился
             if (!answerShown) {
                 showAnswer();
@@ -143,7 +143,7 @@ if (window.DeviceMotionEvent) {
         const acceleration = Math.sqrt(x * x + y * y + z * z);
 
         // Если ускорение превышает пороговое значение, считаем, что устройство трясут
-        if (acceleration > 15) {
+        if (acceleration > 25) {
             startMovement(); // Начинаем движение шара
         }
     });
