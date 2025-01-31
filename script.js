@@ -101,8 +101,14 @@ if (window.DeviceMotionEvent) {
 
         // Если ускорение превышает пороговое значение, считаем, что устройство трясут
         if (acceleration > shakeThreshold) {
+            const now = Date.now();
+
+            // Проверяем задержку между трясками
+            if (now - lastShakeTime > shakeCooldown) {
+                startShake(acceleration); // Запускаем движение шара
+                lastShakeTime = now; // Обновляем время последней тряски
+            }
             shaking = true; // Продолжаем движение шара
-            startShake(acceleration);
         } else {
             shaking = false; // Прекращаем тряску, если ускорение ниже порога
         }
