@@ -9,54 +9,12 @@ const responses = [
 
 let dx = 0, dy = 0; // Направление и скорость движения шара
 let animationFrame;
-const maxSpeed = 10; // Максимальная скорость шара
-const decelerationRate = 0.95; // Коэффициент замедления
-let isShaking = false;
-let lastShakeTime = 0;
-const shakeCooldown = 100; // Задержка между обновлениями тряски (в миллисекундах)
+const maxSpeed = 5; // Максимальная скорость шара
+const sensitivity = 0.1; // Чувствительность к наклону
 
 // Функция для получения случайного ответа
 function getRandomResponse() {
     return responses[Math.floor(Math.random() * responses.length)];
-}
-
-// Функция для начала тряски
-function startShaking(event) {
-    const acceleration = event.accelerationIncludingGravity;
-    const threshold = 2; // Порог тряски
-
-    // Рассчитываем силу тряски
-    const force = Math.hypot(acceleration.x, acceleration.y, acceleration.z);
-
-    if (force > threshold) {
-        isShaking = true;
-
-        // Задаем направление движения в зависимости от силы тряски
-        const angle = Math.atan2(acceleration.y, acceleration.x); // Угол наклона телефона
-        dx += Math.cos(angle) * force * 0.1; // Плавное увеличение скорости
-        dy += Math.sin(angle) * force * 0.1;
-
-        // Ограничиваем максимальную скорость
-        const currentSpeed = Math.hypot(dx, dy);
-        if (currentSpeed > maxSpeed) {
-            dx = (dx / currentSpeed) * maxSpeed;
-            dy = (dy / currentSpeed) * maxSpeed;
-        }
-
-        // Очищаем экран
-        screen.textContent = "";
-        screen.style.opacity = 0;
-
-        // Запускаем движение шара
-        if (!animationFrame) {
-            moveBall();
-        }
-    }
-}
-
-// Функция для остановки тряски
-function stopShaking() {
-    isShaking = false;
 }
 
 // Функция для движения шара
@@ -73,66 +31,64 @@ function moveBall() {
     const ballRadius = ball.offsetWidth / 2;
     if (x < ballRadius) {
         x = ballRadius;
-        dx = Math.abs(dx); // Отскок от левой стенки
+        dx = 0; // Останавливаем шар при столкновении
     }
     if (x > window.innerWidth - ballRadius) {
         x = window.innerWidth - ballRadius;
-        dx = -Math.abs(dx); // Отскок от правой стенки
+        dx = 0; // Останавливаем шар при столкновении
     }
     if (y < ballRadius) {
         y = ballRadius;
-        dy = Math.abs(dy); // Отскок от верхней стенки
+        dy = 0; // Останавливаем шар при столкновении
     }
     if (y > window.innerHeight - ballRadius) {
         y = window.innerHeight - ballRadius;
-        dy = -Math.abs(dy); // Отскок от нижней стенки
+        dy = 0; // Останавливаем шар при столкновении
     }
 
     // Применяем новые координаты
     ball.style.left = `${x}px`;
     ball.style.top = `${y}px`;
 
-    // Замедление шара, если тряска прекратилась
-    if (!isShaking) {
-        dx *= decelerationRate;
-        dy *= decelerationRate;
-
-        // Если скорость очень маленькая, останавливаем шар
-        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
-            dx = 0;
-            dy = 0;
-
-            // Показываем ответ
-            screen.textContent = getRandomResponse();
-            screen.style.opacity = 1;
-            cancelAnimationFrame(animationFrame);
-            animationFrame = null;
-            return;
-        }
-    }
-
     // Рекурсивно вызываем функцию для следующего кадра
     animationFrame = requestAnimationFrame(moveBall);
 }
 
-// Обработчик события тряски телефона
+// Обработчик события наклона телефона
+window.addEventListener('deviceorientation', (event) => {
+    const gamma = event.gamma; // Наклон влево-вправо (от -90 до 90)
+    const beta = event.beta;   // Наклон вперед-назад (от -180 до 180)
+
+    // Преобразуем наклон в скорость
+    dx = gamma * sensitivity;
+    dy = beta * sensitivity;
+
+    // Ограничиваем максимальную скорость
+    const currentSpeed = Math.hypot(dx, dy);
+    if (currentSpeed > maxSpeed) {
+        dx = (dx / currentSpeed) * maxSpeed;
+        dy = (dy / currentSpeed) * maxSpeed;
+    }
+
+    // Запускаем движение шара, если оно еще не запущено
+    if (!animationFrame) {
+        moveBall();
+    }
+});
+
+// Обработчик остановки движения
 window.addEventListener('devicemotion', (event) => {
-    const currentTime = performance.now();
-    if (currentTime - lastShakeTime < shakeCooldown) return; // Игнорируем слишком частые события
-    lastShakeTime = currentTime;
-
     const acceleration = event.accelerationIncludingGravity;
-    const threshold = 2; // Порог тряски
+    const threshold = 1; // Порог для определения остановки
 
-    if (Math.hypot(acceleration.x, acceleration.y, acceleration.z) > threshold) {
-        if (!isShaking) {
-            isShaking = true;
-        }
-        startShaking(event);
-    } else {
-        if (isShaking) {
-            stopShaking();
-        }
+    if (Math.hypot(acceleration.x, acceleration.y, acceleration.z) < threshold) {
+        // Если телефон не двигается, останавливаем шар
+        dx = 0;
+        dy = 0;
+
+        // Показываем ответ
+        screen.textContent = getRandomResponse();
+        screen.style.opacity = 1;
     }
 });
 

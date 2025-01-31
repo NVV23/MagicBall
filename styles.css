@@ -14,7 +14,7 @@ body, html {
 .ball {
     width: 225px; /* Увеличили размер шара в 1.5 раза */
     height: 225px;
-    background: radial-gradient(circle, #f0f0f0 20%, #333 90%);
+    background: radial-gradient(circle, #24b15a 20%, #333 90%);
     border-radius: 50%;
     display: flex;
     justify-content: center;
