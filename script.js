@@ -26,6 +26,18 @@ const initialSpeed = 13; // Начальная скорость шара
 const deceleration = 0.97; // Коэффициент замедления
 const constantSpeedDuration = 3000; // Время (в миллисекундах), в течение которого шар движется с постоянной скоростью
 
+// Подготовка звука к воспроизведению
+function preloadAudio() {
+    bounceSound.play().catch(() => {}); // Пытаемся воспроизвести звук
+    bounceSound.pause(); // Останавливаем воспроизведение
+    bounceSound.currentTime = 0; // Сбрасываем время
+}
+
+// Вызываем подготовку звука при загрузке страницы
+window.addEventListener('DOMContentLoaded', () => {
+    preloadAudio();
+});
+
 // Устанавливаем начальное положение шара
 function setInitialPosition() {
     x = window.innerWidth / 2 - 75; // Центр по горизонтали
@@ -135,16 +147,25 @@ function moveBall() {
 }
 
 // Обработчик события devicemotion
+let lastShakeTime = 0; // Время последней тряски
+const shakeCooldown = 100; // Задержка между проверками тряски (в миллисекундах)
+
 if (window.DeviceMotionEvent) {
     window.addEventListener('devicemotion', (event) => {
+        const now = Date.now();
+
+        // Игнорируем слишком частые вызовы
+        if (now - lastShakeTime < shakeCooldown) return;
+
         const { x, y, z } = event.accelerationIncludingGravity;
 
         // Вычисляем общее ускорение
         const acceleration = Math.sqrt(x * x + y * y + z * z);
 
         // Если ускорение превышает пороговое значение, считаем, что устройство трясут
-        if (acceleration > 25) {
+        if (acceleration > 15) {
             startMovement(); // Начинаем движение шара
+            lastShakeTime = now; // Обновляем время последней тряски
         }
     });
 } else {

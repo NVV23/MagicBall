@@ -26,7 +26,7 @@ body {
 .ball {
     width: 150px;
     height: 150px;
-    background: #ff6f61; /* Базовый цвет без градиента */
+    background: #ff6f61; /* Базовый цвет */
     border-radius: 50%;
     position: absolute;
     display: flex;
@@ -35,8 +35,9 @@ body {
     box-shadow: none; /* Убираем постоянное свечение */
 }
 
-/* Анимация свечения */
+/* Градиент при остановке */
 .ball.glow-active {
+    background: radial-gradient(circle, #ff6f61, #ff4d4d); /* Градиентный фон */
     animation: glow 1.5s infinite alternate;
 }
 
@@ -45,7 +46,7 @@ body {
         box-shadow: 0 0 20px rgba(255, 111, 97, 0.6);
     }
     to {
-        box-shadow: 0 0 40px rgba(255, 111, 97, 1);
+        box-shadow: 0 0 30px rgba(255, 111, 97, 0.8);
     }
 }
 
