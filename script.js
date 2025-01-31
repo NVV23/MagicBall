@@ -15,7 +15,7 @@ const bounceSound = document.getElementById('bounceSound');
 let x = window.innerWidth / 2 - 75, y = window.innerHeight / 2 - 75;
 let dx = 0, dy = 0, isStopped = true, answerShown = false;
 
-const initialSpeed = 13, deceleration = 0.99, constantSpeedDuration = 1000;
+const initialSpeed = 20, deceleration = 0.99;
 
 // Установка начального положения шара
 function setInitialPosition() {
@@ -107,7 +107,7 @@ function preloadAudio() {
 
 // Обработчик тряски телефона
 if (window.DeviceMotionEvent) {
-    let lastShakeTime = 0, shakeCooldown = 300;
+    let lastShakeTime = 0, shakeCooldown = 100;
 
     window.addEventListener('devicemotion', (event) => {
         if (Date.now() - lastShakeTime < shakeCooldown) return;
