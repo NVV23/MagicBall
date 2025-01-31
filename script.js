@@ -20,8 +20,8 @@ let isStopped = true; // Флаг для остановки шара
 let answerShown = false; // Флаг для показа ответа
 
 // Параметры движения
-const initialSpeed = 14; // Начальная скорость шара
-const deceleration = 0.998; // Коэффициент замедления
+const initialSpeed = 20; // Начальная скорость шара
+const deceleration = 0.99; // Коэффициент замедления
 
 // Устанавливаем начальное положение шара
 function setInitialPosition() {
