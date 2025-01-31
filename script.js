@@ -35,7 +35,7 @@ function setInitialPosition() {
 
 // Функция для получения случайного направления
 function getRandomDirection() {
-    return (Math.random() - 0.5) * 20; // Случайное направление от -10 до 10
+    return (Math.random() - 0.5) * 40; // Увеличиваем скорость движения
 }
 
 // Обнаружение тряски
@@ -44,7 +44,7 @@ function startShake(acceleration) {
         shaking = true;
         isStopped = false; // Шар начал движение
         answerShown = false; // Сбрасываем флаг показа ответа
-        const speedFactor = Math.min(acceleration / 50, 3); // Ограничение максимальной скорости
+        const speedFactor = Math.min(acceleration / 50, 5); // Ограничение максимальной скорости
         dx = getRandomDirection() * speedFactor;
         dy = getRandomDirection() * speedFactor;
         answerElement.classList.remove('show'); // Скрываем ответ при начале движения
