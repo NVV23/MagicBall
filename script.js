@@ -14,7 +14,6 @@ const bounceSound = document.getElementById('bounceSound');
 // Параметры движения
 let x = window.innerWidth / 2 - 75, y = window.innerHeight / 2 - 75;
 let dx = 0, dy = 0, isStopped = true, answerShown = false;
-let startTime = 0;
 
 const initialSpeed = 13, deceleration = 0.99, constantSpeedDuration = 1000;
 
@@ -26,10 +25,23 @@ function setInitialPosition() {
     ball.style.top = `${y}px`;
 }
 
-// Генерация случайного направления
+// Генерация случайного направления по диагоналям с отклонением
 function getRandomDirection() {
-    const angle = (Math.PI / 4) * (Math.floor(Math.random() * 4) + 1) + (Math.random() - 0.5) * (Math.PI / 18);
-    return { dx: Math.cos(angle), dy: Math.sin(angle) };
+    const baseAngles = [
+        Math.PI / 4,   // 45° (право-верх)
+        3 * Math.PI / 4, // 135° (лево-верх)
+        5 * Math.PI / 4, // 225° (лево-низ)
+        7 * Math.PI / 4  // 315° (право-низ)
+    ];
+
+    const baseAngle = baseAngles[Math.floor(Math.random() * baseAngles.length)];
+    const deviation = (Math.random() - 0.5) * (10 * Math.PI / 180); // ±10°
+    const angle = baseAngle + deviation;
+
+    return {
+        dx: Math.cos(angle),
+        dy: Math.sin(angle)
+    };
 }
 
 // Начать движение шара
@@ -40,10 +52,12 @@ function startMovement() {
 
     isStopped = false;
     answerShown = false;
+
     const direction = getRandomDirection();
     dx = direction.dx * initialSpeed;
     dy = direction.dy * initialSpeed;
-    startTime = Date.now();
+
+    answerElement.classList.remove('show'); // Скрываем ответ при начале движения
     ball.classList.remove('glow-active'); // Убираем яркое свечение при движении
 }
 
@@ -67,10 +81,9 @@ function moveBall() {
     ball.style.left = `${x}px`;
     ball.style.top = `${y}px`;
 
-    if (Date.now() - startTime > constantSpeedDuration) {
-        dx *= deceleration;
-        dy *= deceleration;
-    }
+    // Замедление шара
+    dx *= deceleration;
+    dy *= deceleration;
 
     if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
         isStopped = true;
