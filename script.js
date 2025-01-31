@@ -18,6 +18,7 @@ let dx = 0;
 let dy = 0;
 let shaking = false;
 let isStopped = true; // Флаг для отслеживания остановки шара
+let answerShown = false; // Флаг для отслеживания показа ответа
 
 // Параметры тряски
 let lastShakeTime = 0;
@@ -34,6 +35,7 @@ function shakeDetected() {
     if (!shaking && isStopped) {
         shaking = true;
         isStopped = false; // Шар начал движение
+        answerShown = false; // Сбрасываем флаг показа ответа
         dx = getRandomDirection();
         dy = getRandomDirection();
         answerElement.classList.remove('show'); // Скрываем ответ при начале движения
@@ -64,9 +66,12 @@ function moveBall() {
         dy *= 0.98;
 
         // Если шар почти остановился
-        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1 && shaking === false) {
             isStopped = true; // Шар остановился
-            showAnswer();
+            if (!answerShown) {
+                showAnswer();
+                answerShown = true; // Ответ показан
+            }
         }
     }
 
@@ -75,11 +80,9 @@ function moveBall() {
 
 // Показать случайный ответ
 function showAnswer() {
-    if (isStopped) {
-        const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
-        answerElement.textContent = randomAnswer;
-        answerElement.classList.add('show');
-    }
+    const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
+    answerElement.textContent = randomAnswer;
+    answerElement.classList.add('show');
 }
 
 // Обработчик события devicemotion
@@ -99,6 +102,8 @@ if (window.DeviceMotionEvent) {
                 shakeDetected();
                 lastShakeTime = now; // Обновляем время последней тряски
             }
+        } else {
+            stopShake(); // Прекращаем тряску, если ускорение ниже порога
         }
     });
 } else {
