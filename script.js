@@ -10,6 +10,7 @@ const ANSWERS = [
 const ball = document.getElementById('ball');
 const answerElement = document.getElementById('answer');
 const shakeButton = document.getElementById('shakeButton');
+const bounceSound = document.getElementById('bounceSound'); // Звук удара
 
 // Позиция и направление шара
 let x = window.innerWidth / 2 - 75; // Центр экрана
@@ -53,9 +54,23 @@ function moveBall() {
         x += dx;
         y += dy;
 
-        // Отскок от стенок
-        if (x <= 0 || x >= window.innerWidth - 150) dx = -dx;
-        if (y <= 0 || y >= window.innerHeight - 150) dy = -dy;
+        // Проверка столкновения со стенками
+        let hitWall = false;
+
+        if (x <= 0 || x >= window.innerWidth - 150) {
+            dx = -dx;
+            hitWall = true;
+        }
+        if (y <= 0 || y >= window.innerHeight - 150) {
+            dy = -dy;
+            hitWall = true;
+        }
+
+        // Воспроизведение звука при ударе
+        if (hitWall) {
+            bounceSound.currentTime = 0; // Сброс времени воспроизведения
+            bounceSound.play(); // Воспроизведение звука
+        }
 
         // Обновление позиции шара
         ball.style.left = `${x}px`;
