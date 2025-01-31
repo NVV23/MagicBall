@@ -102,6 +102,7 @@ if (window.DeviceMotionEvent) {
         // Если ускорение превышает пороговое значение, считаем, что устройство трясут
         if (acceleration > shakeThreshold) {
             shaking = true; // Продолжаем движение шара
+            startShake(acceleration);
         } else {
             shaking = false; // Прекращаем тряску, если ускорение ниже порога
         }
@@ -112,20 +113,25 @@ if (window.DeviceMotionEvent) {
 
 // Обработчики кнопки "Имитировать тряску"
 let simulatedShaking = false; // Флаг для имитации тряски кнопкой
+let shakeInterval;
 
 shakeButton.addEventListener('mousedown', () => {
     simulatedShaking = true;
     const simulatedAcceleration = 30; // Имитируем среднюю силу тряски
-    startShake(simulatedAcceleration);
+    shakeInterval = setInterval(() => {
+        startShake(simulatedAcceleration);
+    }, 100); // Имитация тряски каждые 100 мс
 });
 
 shakeButton.addEventListener('mouseup', () => {
     simulatedShaking = false;
+    clearInterval(shakeInterval); // Останавливаем интервал
     shaking = false; // Прекращаем тряску
 });
 
 shakeButton.addEventListener('mouseleave', () => {
     simulatedShaking = false;
+    clearInterval(shakeInterval); // Останавливаем интервал
     shaking = false; // Прекращаем тряску, если курсор покинул кнопку
 });
 
