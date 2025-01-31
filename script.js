@@ -140,24 +140,33 @@ function handleDeviceMotion(event) {
 
 // Обработчики кнопки "Имитировать тряску"
 let simulatedShaking = false; // Флаг для имитации тряски кнопкой
+let shakeInterval;
 
 shakeButton.addEventListener('touchstart', () => {
     simulatedShaking = true;
     startShake(); // Начинаем тряску при касании
+    shakeInterval = setInterval(() => {
+        startShake(); // Поддерживаем тряску каждые 100 мс
+    }, 100);
 });
 
 shakeButton.addEventListener('touchend', () => {
     simulatedShaking = false;
+    clearInterval(shakeInterval); // Останавливаем интервал
     stopShake(); // Прекращаем тряску при отпускании
 });
 
 shakeButton.addEventListener('mousedown', () => {
     simulatedShaking = true;
     startShake(); // Начинаем тряску при нажатии на ПК
+    shakeInterval = setInterval(() => {
+        startShake(); // Поддерживаем тряску каждые 100 мс
+    }, 100);
 });
 
 shakeButton.addEventListener('mouseup', () => {
     simulatedShaking = false;
+    clearInterval(shakeInterval); // Останавливаем интервал
     stopShake(); // Прекращаем тряску при отпускании на ПК
 });
 
