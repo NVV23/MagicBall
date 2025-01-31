@@ -18,6 +18,11 @@ let dy = 0;
 let shaking = false;
 let isStopped = true; // Флаг для отслеживания остановки шара
 
+// Параметры тряски
+let lastShakeTime = 0;
+const shakeThreshold = 15; // Пороговое значение для тряски
+const shakeCooldown = 1000; // Задержка между трясками (в миллисекундах)
+
 // Функция для получения случайного направления
 function getRandomDirection() {
     return (Math.random() - 0.5) * 10; // Случайное направление от -5 до 5
@@ -76,7 +81,28 @@ function showAnswer() {
     }
 }
 
+// Обработчик события devicemotion
+if (window.DeviceMotionEvent) {
+    window.addEventListener('devicemotion', (event) => {
+        const { x, y, z } = event.accelerationIncludingGravity;
+
+        // Вычисляем общее ускорение
+        const acceleration = Math.sqrt(x * x + y * y + z * z);
+
+        // Проверяем, превышает ли ускорение пороговое значение
+        if (acceleration > shakeThreshold) {
+            const now = Date.now();
+
+            // Проверяем задержку между трясками
+            if (now - lastShakeTime > shakeCooldown) {
+                shakeDetected();
+                lastShakeTime = now; // Обновляем время последней тряски
+            }
+        }
+    });
+} else {
+    alert("Ваше устройство не поддерживает обнаружение тряски. Пожалуйста, используйте другое устройство.");
+}
+
 // Начало анимации
-window.addEventListener('devicemotion', () => shakeDetected());
-setTimeout(stopShake, 2000); // Прекращение тряски через 2 секунды
 moveBall();
