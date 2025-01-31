@@ -11,8 +11,8 @@ const ball = document.getElementById('ball');
 const answerElement = document.getElementById('answer');
 
 // Позиция и направление шара
-let x = window.innerWidth / 2 - 30;
-let y = window.innerHeight / 2 - 30;
+let x = window.innerWidth / 2 - 75; // Центр экрана
+let y = window.innerHeight / 2 - 75;
 let dx = 0;
 let dy = 0;
 let shaking = false;
@@ -28,29 +28,39 @@ function shakeDetected() {
         shaking = true;
         dx = getRandomDirection();
         dy = getRandomDirection();
-        setTimeout(() => shaking = false, 2000); // Прекращение тряски через 2 секунды
     }
+}
+
+// Остановка тряски
+function stopShake() {
+    shaking = false;
 }
 
 // Движение шара
 function moveBall() {
-    x += dx;
-    y += dy;
+    if (shaking) {
+        x += dx;
+        y += dy;
 
-    // Отскок от стенок
-    if (x <= 0 || x >= window.innerWidth - 60) dx = -dx;
-    if (y <= 0 || y >= window.innerHeight - 60) dy = -dy;
+        // Отскок от стенок
+        if (x <= 0 || x >= window.innerWidth - 150) dx = -dx;
+        if (y <= 0 || y >= window.innerHeight - 150) dy = -dy;
 
-    // Обновление позиции шара
-    ball.style.left = x + 'px';
-    ball.style.top = y + 'px';
+        // Обновление позиции шара
+        ball.style.left = x + 'px';
+        ball.style.top = y + 'px';
+    } else {
+        // Замедление шара
+        dx *= 0.95;
+        dy *= 0.95;
 
-    // Замедление шара
-    if (!shaking) {
-        dx *= 0.98;
-        dy *= 0.98;
+        x += dx;
+        y += dy;
 
-        // Если шар остановился, показываем ответ
+        ball.style.left = x + 'px';
+        ball.style.top = y + 'px';
+
+        // Если шар почти остановился
         if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
             showAnswer();
         }
@@ -64,9 +74,9 @@ function showAnswer() {
     const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
     answerElement.textContent = randomAnswer;
     answerElement.classList.add('show');
-    setTimeout(() => answerElement.classList.remove('show'), 3000); // Скрыть ответ через 3 секунды
 }
 
 // Начало анимации
 window.addEventListener('devicemotion', () => shakeDetected());
+setTimeout(stopShake, 2000); // Прекращение тряски через 2 секунды
 moveBall();

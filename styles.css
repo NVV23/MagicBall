@@ -23,12 +23,15 @@ body {
 
 /* Шар */
 .ball {
-    width: 60px;
-    height: 60px;
+    width: 150px;
+    height: 150px;
     background: radial-gradient(circle, #ff6f61, #ff4d4d);
     border-radius: 50%;
     position: absolute;
     box-shadow: 0 0 30px rgba(255, 111, 97, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
     animation: glow 1.5s infinite alternate;
 }
 
@@ -43,16 +46,14 @@ body {
 
 /* Ответ */
 .answer {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: #ffffff;
+    color: white;
     font-size: 18px;
     font-weight: bold;
     text-align: center;
     opacity: 0;
     transition: opacity 0.5s ease-in-out;
+    max-width: 80%;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .answer.show {
