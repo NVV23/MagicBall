@@ -1,16 +1,10 @@
-// Список ответов
-const ANSWERS = [
-    "Да", "Нет", "Возможно", "Скорее всего да", "Скорее всего нет",
-    "Я устал, спроси позже", "Я не экстрасенс, я просто шар",
-    "А сам как думаешь?", "Да, хотя нет", "Да нет наверное",
-    "100%", "АУФ", "Маловероятно"
-];
-
 // Элементы DOM
 const ball = document.getElementById('ball');
 const answerElement = document.getElementById('answer');
 const shakeButton = document.getElementById('shakeButton');
-const bounceSound = document.getElementById('bounceSound'); // Звук удара
+
+// Флаг для проверки, был ли выполнен первоначальный запуск
+let isInitialized = false;
 
 // Позиция и направление шара
 let x = window.innerWidth / 2 - 75; // Центр экрана
@@ -23,20 +17,8 @@ let startTime = null; // Время начала движения
 
 // Параметры движения
 const initialSpeed = 13; // Начальная скорость шара
-const deceleration = 0.97; // Коэффициент замедления
-const constantSpeedDuration = 3000; // Время (в миллисекундах), в течение которого шар движется с постоянной скоростью
-
-// Подготовка звука к воспроизведению
-function preloadAudio() {
-    bounceSound.play().catch(() => {}); // Пытаемся воспроизвести звук
-    bounceSound.pause(); // Останавливаем воспроизведение
-    bounceSound.currentTime = 0; // Сбрасываем время
-}
-
-// Вызываем подготовку звука при загрузке страницы
-window.addEventListener('DOMContentLoaded', () => {
-    preloadAudio();
-});
+const deceleration = 0.99; // Коэффициент замедления
+const constantSpeedDuration = 1500; // Время (в миллисекундах), в течение которого шар движется с постоянной скоростью
 
 // Устанавливаем начальное положение шара
 function setInitialPosition() {
@@ -48,7 +30,6 @@ function setInitialPosition() {
 
 // Функция для получения случайного направления по диагоналям с отклонением
 function getRandomDirection() {
-    // Основные углы для четырёх диагоналей (в радианах)
     const baseAngles = [
         Math.PI / 4,   // 45° (право-верх)
         3 * Math.PI / 4, // 135° (лево-верх)
@@ -56,14 +37,10 @@ function getRandomDirection() {
         7 * Math.PI / 4  // 315° (право-низ)
     ];
 
-    // Выбираем случайный базовый угол
     const baseAngle = baseAngles[Math.floor(Math.random() * baseAngles.length)];
-
-    // Добавляем случайное отклонение в пределах ±10 градусов (в радианах)
     const deviation = (Math.random() - 0.5) * (10 * Math.PI / 180); // ±10°
     const angle = baseAngle + deviation;
 
-    // Преобразуем угол в направление (dx, dy)
     return {
         dx: Math.cos(angle),
         dy: Math.sin(angle)
@@ -72,11 +49,12 @@ function getRandomDirection() {
 
 // Начать движение шара
 function startMovement() {
+    if (!isInitialized) return; // Если программа не инициализирована, ничего не делаем
+
     if (isStopped) {
         isStopped = false; // Шар начал движение
         answerShown = false; // Сбрасываем флаг показа ответа
 
-        // Получаем случайное направление с отклонением
         const direction = getRandomDirection();
         dx = direction.dx * initialSpeed;
         dy = direction.dy * initialSpeed;
@@ -87,16 +65,10 @@ function startMovement() {
     }
 }
 
-// Показать случайный ответ
-function showAnswer() {
-    const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
-    answerElement.textContent = randomAnswer;
-    answerElement.classList.add('show');
-    ball.classList.add('glow-active'); // Добавляем свечение при остановке
-}
-
 // Движение шара
 function moveBall() {
+    if (!isInitialized) return; // Если программа не инициализирована, ничего не делаем
+
     if (!isStopped) {
         x += dx;
         y += dy;
@@ -126,13 +98,12 @@ function moveBall() {
         // Проверяем, прошло ли 2 секунды с момента начала движения
         const currentTime = Date.now();
         if (currentTime - startTime > constantSpeedDuration) {
-            // Применяем замедление после 2 секунд
             dx *= deceleration;
             dy *= deceleration;
         }
 
         // Если шар почти остановился
-        if (Math.abs(dx) < 0.2 && Math.abs(dy) < 0.2) {
+        if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
             isStopped = true; // Шар остановился
             if (!answerShown) {
                 showAnswer();
@@ -146,39 +117,55 @@ function moveBall() {
     requestAnimationFrame(moveBall);
 }
 
-// Обработчик события devicemotion
-let lastShakeTime = 0; // Время последней тряски
-const shakeCooldown = 100; // Задержка между проверками тряски (в миллисекундах)
+// Показать случайный ответ
+function showAnswer() {
+    const randomAnswer = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
+    answerElement.textContent = randomAnswer;
+    answerElement.classList.add('show');
+    ball.classList.add('glow-active'); // Добавляем свечение при остановке
+}
 
+// Обработчик события devicemotion
 if (window.DeviceMotionEvent) {
     window.addEventListener('devicemotion', (event) => {
-        const now = Date.now();
-
-        // Игнорируем слишком частые вызовы
-        if (now - lastShakeTime < shakeCooldown) return;
+        if (!isInitialized) return; // Если программа не инициализирована, ничего не делаем
 
         const { x, y, z } = event.accelerationIncludingGravity;
-
-        // Вычисляем общее ускорение
         const acceleration = Math.sqrt(x * x + y * y + z * z);
 
-        // Если ускорение превышает пороговое значение, считаем, что устройство трясут
         if (acceleration > 15) {
             startMovement(); // Начинаем движение шара
-            lastShakeTime = now; // Обновляем время последней тряски
         }
     });
 } else {
     alert("Ваше устройство не поддерживает обнаружение тряски. Используйте кнопку ниже.");
 }
 
-// Обработчики кнопки "Имитировать тряску"
+// Обработчики кнопки "Запуск"
 shakeButton.addEventListener('touchstart', () => {
-    startMovement(); // Начинаем движение шара
+    if (!isInitialized) {
+        isInitialized = true; // Программа инициализирована
+        shakeButton.classList.add('initial-hidden'); // Скрываем кнопку
+        setTimeout(() => {
+            shakeButton.classList.remove('initial-hidden');
+            shakeButton.classList.add('final-state'); // Возвращаем кнопку в исходное состояние
+        }, 1000); // Задержка перед появлением кнопки
+    } else {
+        startMovement(); // Начинаем движение шара
+    }
 });
 
 shakeButton.addEventListener('mousedown', () => {
-    startMovement(); // Начинаем движение шара
+    if (!isInitialized) {
+        isInitialized = true; // Программа инициализирована
+        shakeButton.classList.add('initial-hidden'); // Скрываем кнопку
+        setTimeout(() => {
+            shakeButton.classList.remove('initial-hidden');
+            shakeButton.classList.add('final-state'); // Возвращаем кнопку в исходное состояние
+        }, 1000); // Задержка перед появлением кнопки
+    } else {
+        startMovement(); // Начинаем движение шара
+    }
 });
 
 // Установка начального положения шара
