@@ -26,7 +26,7 @@ body {
 .ball {
     width: 150px;
     height: 150px;
-    background: #ff6f61; /* Однотонный цвет */
+    background: rgb(255, 111, 97); /* Однотонный цвет */
     border-radius: 50%;
     position: absolute;
     display: flex;

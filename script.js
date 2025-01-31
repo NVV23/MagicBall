@@ -16,7 +16,7 @@ let x = window.innerWidth / 2 - 75, y = window.innerHeight / 2 - 75;
 let dx = 0, dy = 0, isStopped = true, answerShown = false, isInitialized = false;
 let startTime = 0;
 
-const initialSpeed = 12, deceleration = 0.99, constantSpeedDuration = 1500;
+const initialSpeed = 13, deceleration = 0.99, constantSpeedDuration = 1500;
 
 // Установка начального положения шара
 function setInitialPosition() {
@@ -35,6 +35,8 @@ function getRandomDirection() {
 // Начать движение шара
 function startMovement() {
     if (!isInitialized || !isStopped) return;
+
+    console.log("Шар начал движение!"); // Отладочное сообщение
 
     isStopped = false;
     answerShown = false;
@@ -104,6 +106,7 @@ if (window.DeviceMotionEvent) {
         );
 
         if (acceleration > 15) {
+            console.log("Тряска обнаружена!"); // Отладочное сообщение
             startMovement();
             lastShakeTime = Date.now();
         }
@@ -116,6 +119,7 @@ shakeButton.addEventListener('mousedown', handleButtonClick);
 
 function handleButtonClick() {
     if (!isInitialized) {
+        console.log("Кнопка 'Запуск' нажата!"); // Отладочное сообщение
         isInitialized = true;
         shakeButton.classList.add('initial-hidden');
         setTimeout(() => {
@@ -123,6 +127,7 @@ function handleButtonClick() {
             shakeButton.classList.add('final-state');
         }, 1000);
     } else {
+        console.log("Кнопка нажата для запуска движения!"); // Отладочное сообщение
         startMovement();
     }
 }
