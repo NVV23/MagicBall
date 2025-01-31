@@ -33,11 +33,11 @@ function setInitialPosition() {
 
 // Функция для получения случайного направления
 function getRandomDirection() {
-    return (Math.random() - 0.5) * 20; // Увеличиваем скорость движения
+    return (Math.random() - 0.5) * 20; // Случайное направление от -10 до 10
 }
 
 // Обнаружение тряски
-function shakeDetected(acceleration) {
+function startShake(acceleration) {
     if (!shaking && isStopped) {
         shaking = true;
         isStopped = false; // Шар начал движение
@@ -65,8 +65,8 @@ function moveBall() {
 
         // Замедление шара только если тряска прекратилась
         if (!shaking) {
-            dx *= 0.99; // Уменьшаем коэффициент замедления для плавности
-            dy *= 0.99;
+            dx *= 0.98; // Уменьшаем коэффициент замедления для плавности
+            dy *= 0.98;
         }
 
         // Если шар почти остановился
@@ -100,9 +100,6 @@ if (window.DeviceMotionEvent) {
         // Если ускорение превышает пороговое значение, считаем, что устройство трясут
         if (acceleration > shakeThreshold) {
             shaking = true; // Продолжаем движение шара
-            const speedFactor = Math.min(acceleration / 50, 3); // Ограничение максимальной скорости
-            dx = getRandomDirection() * speedFactor;
-            dy = getRandomDirection() * speedFactor;
         } else {
             shaking = false; // Прекращаем тряску, если ускорение ниже порога
         }
@@ -115,7 +112,7 @@ if (window.DeviceMotionEvent) {
 shakeButton.addEventListener('click', () => {
     if (isStopped) {
         const simulatedAcceleration = 30; // Имитируем среднюю силу тряски
-        shakeDetected(simulatedAcceleration);
+        startShake(simulatedAcceleration);
     }
 });
 
