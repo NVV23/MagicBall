@@ -16,13 +16,13 @@ let x = window.innerWidth / 2 - 75; // Центр экрана
 let y = window.innerHeight / 2 - 75;
 let dx = 0;
 let dy = 0;
-let shaking = false;
-let isStopped = true; // Флаг для отслеживания остановки шара
-let answerShown = false; // Флаг для отслеживания показа ответа
+let shaking = false; // Флаг для тряски
+let isStopped = true; // Флаг для остановки шара
+let answerShown = false; // Флаг для показа ответа
 
 // Параметры тряски
 const shakeThreshold = 15; // Пороговое значение для тряски
-const shakeCooldown = 1000; // Задержка между трясками (в миллисекундах)
+const shakeSpeed = 10; // Постоянная скорость шара во время тряски
 let lastShakeTime = 0;
 
 // Устанавливаем начальное положение шара
@@ -35,20 +35,24 @@ function setInitialPosition() {
 
 // Функция для получения случайного направления
 function getRandomDirection() {
-    return (Math.random() - 0.5) * 40; // Увеличиваем скорость движения
+    return (Math.random() - 0.5) * 2; // Случайное направление (-1..1)
 }
 
-// Обнаружение тряски
-function startShake(acceleration) {
+// Начать тряску
+function startShake() {
     if (!shaking && isStopped) {
         shaking = true;
         isStopped = false; // Шар начал движение
         answerShown = false; // Сбрасываем флаг показа ответа
-        const speedFactor = Math.min(acceleration / 50, 5); // Ограничение максимальной скорости
-        dx = getRandomDirection() * speedFactor;
-        dy = getRandomDirection() * speedFactor;
+        dx = getRandomDirection() * shakeSpeed;
+        dy = getRandomDirection() * shakeSpeed;
         answerElement.classList.remove('show'); // Скрываем ответ при начале движения
     }
+}
+
+// Остановить тряску
+function stopShake() {
+    shaking = false; // Прекращаем тряску
 }
 
 // Движение шара
@@ -93,9 +97,8 @@ function showAnswer() {
 
 // Обработчик события devicemotion
 if (window.DeviceMotionEvent) {
-    // Проверяем, поддерживает ли браузер событие devicemotion
+    // Для Safari на iOS требуется явное разрешение
     if (typeof DeviceMotionEvent.requestPermission === 'function') {
-        // Для Safari на iOS требуется явное разрешение
         DeviceMotionEvent.requestPermission()
             .then(permissionState => {
                 if (permissionState === 'granted') {
@@ -122,41 +125,27 @@ function handleDeviceMotion(event) {
 
     // Если ускорение превышает пороговое значение, считаем, что устройство трясут
     if (acceleration > shakeThreshold) {
-        const now = Date.now();
-
-        // Проверяем задержку между трясками
-        if (now - lastShakeTime > shakeCooldown) {
-            startShake(acceleration); // Запускаем движение шара
-            lastShakeTime = now; // Обновляем время последней тряски
-        }
-        shaking = true; // Продолжаем движение шара
+        startShake(); // Начинаем тряску
     } else {
-        shaking = false; // Прекращаем тряску, если ускорение ниже порога
+        stopShake(); // Прекращаем тряску
     }
 }
 
 // Обработчики кнопки "Имитировать тряску"
-let simulatedShaking = false; // Флаг для имитации тряски кнопкой
-let shakeInterval;
+shakeButton.addEventListener('touchstart', () => {
+    startShake(); // Начинаем тряску при касании
+});
+
+shakeButton.addEventListener('touchend', () => {
+    stopShake(); // Прекращаем тряску при отпускании
+});
 
 shakeButton.addEventListener('mousedown', () => {
-    simulatedShaking = true;
-    const simulatedAcceleration = 30; // Имитируем среднюю силу тряски
-    shakeInterval = setInterval(() => {
-        startShake(simulatedAcceleration);
-    }, 100); // Имитация тряски каждые 100 мс
+    startShake(); // Начинаем тряску при нажатии на ПК
 });
 
 shakeButton.addEventListener('mouseup', () => {
-    simulatedShaking = false;
-    clearInterval(shakeInterval); // Останавливаем интервал
-    shaking = false; // Прекращаем тряску
-});
-
-shakeButton.addEventListener('mouseleave', () => {
-    simulatedShaking = false;
-    clearInterval(shakeInterval); // Останавливаем интервал
-    shaking = false; // Прекращаем тряску, если курсор покинул кнопку
+    stopShake(); // Прекращаем тряску при отпускании на ПК
 });
 
 // Установка начального положения шара
