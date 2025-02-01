@@ -107,7 +107,7 @@ function preloadAudio() {
 
 // Обработчик тряски телефона
 if (window.DeviceMotionEvent) {
-    let lastShakeTime = 0, shakeCooldown = 100;
+    let lastShakeTime = 0, shakeCooldown = 300;
 
     window.addEventListener('devicemotion', (event) => {
         if (Date.now() - lastShakeTime < shakeCooldown) return;
