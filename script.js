@@ -15,7 +15,7 @@ const bounceSound = document.getElementById('bounceSound');
 let x = window.innerWidth / 2 - 75, y = window.innerHeight / 2 - 75;
 let dx = 0, dy = 0, isStopped = true, answerShown = false;
 
-const initialSpeed = 20, deceleration = 0.99;
+const initialSpeed = 15, deceleration = 0.99;
 
 // Установка начального положения шара
 function setInitialPosition() {
@@ -68,16 +68,11 @@ function moveBall() {
     x += dx;
     y += dy;
 
-    // Отскок от стенок
-    let hitWall = false;
-    if (x <= 0 || x >= window.innerWidth - 150) { dx = -dx; hitWall = true; }
-    if (y <= 0 || y >= window.innerHeight - 150) { dy = -dy; hitWall = true; }
+    // Ограничение движения шара в пределах экрана
+    if (x <= 0 || x >= window.innerWidth - 150) { dx = -dx; }
+    if (y <= 0 || y >= window.innerHeight - 150) { dy = -dy; }
 
-    if (hitWall) {
-        bounceSound.currentTime = 0;
-        bounceSound.play();
-    }
-
+    // Обновление позиции шара
     ball.style.left = `${x}px`;
     ball.style.top = `${y}px`;
 
@@ -85,6 +80,7 @@ function moveBall() {
     dx *= deceleration;
     dy *= deceleration;
 
+    // Проверка остановки шара
     if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
         isStopped = true;
         if (!answerShown) {
@@ -107,7 +103,7 @@ function preloadAudio() {
 
 // Обработчик тряски телефона
 if (window.DeviceMotionEvent) {
-    let lastShakeTime = 0, shakeCooldown = 300;
+    let lastShakeTime = 0, shakeCooldown = 400;
 
     window.addEventListener('devicemotion', (event) => {
         if (Date.now() - lastShakeTime < shakeCooldown) return;
