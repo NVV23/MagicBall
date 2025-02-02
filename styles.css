@@ -1,0 +1,109 @@
+/* Общие стили */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    background: linear-gradient(135deg, #1e1e2f, #2a2a40);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    position: relative;
+}
+.container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+/* Шар */
+.ball {
+    width: 150px; /* Вернули старый размер */
+    height: 150px; /* Вернули старый размер */
+    background: radial-gradient(circle, #ff6f61, #ff4d4d); /* Градиентный фон */
+    border-radius: 50%;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    will-change: transform, box-shadow; /* Оптимизация рендеринга */
+}
+/* Градиент при остановке */
+.ball.glow-active {
+    animation: glow 1.5s infinite alternate;
+}
+@keyframes glow {
+    from {
+        box-shadow: 0 0 20px rgba(255, 111, 97, 0.6);
+    }
+    to {
+        box-shadow: 0 0 30px rgba(255, 111, 97, 0.8);
+    }
+}
+/* Ответ */
+.answer {
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    max-width: 80%;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    will-change: opacity; /* Оптимизация рендеринга */
+}
+.answer.show {
+    opacity: 1;
+}
+/* Кнопка имитации тряски */
+#shakeButton {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #ff6f61;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 111, 97, 0.6);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    user-select: none; /* Запрещаем выделение текста */
+    -webkit-user-select: none; /* Для Safari */
+}
+#shakeButton:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 111, 97, 0.8);
+}
+/* Кнопка звука */
+#soundButton {
+    position: absolute;
+    bottom: 20px;
+    right: 20px; /* В правом нижнем углу */
+    padding: 10px 15px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #ff6f61;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(255, 111, 97, 0.6);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    user-select: none; /* Запрещаем выделение текста */
+    -webkit-user-select: none; /* Для Safari */
+}
+#soundButton.sound-off {
+    background-color: #ccc; /* Серый цвет, если звук выключен */
+    color: #333;
+}
+#soundButton:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(255, 111, 97, 0.8);
+}
