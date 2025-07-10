@@ -23,30 +23,19 @@ body {
 .ball {
     width: 150px;
     height: 150px;
-    background: radial-gradient(circle, #ff6f61, #ff4d4d);
+    background: #ffc061;
     border-radius: 50%;
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     will-change: transform;
-    transform: translate3d(0, 0, 0); /* Принудительное включение аппаратного ускорения */
-    backface-visibility: hidden; /* Оптимизация для мобильных устройств */
-    -webkit-backface-visibility: hidden;
-    contain: layout style paint; /* CSS Containment для лучшей производительности */
+    transform: translate3d(0, 0, 0);
 }
 /* Градиент при остановке */
 .ball.glow-active {
-    animation: glow 2s infinite alternate;
-    will-change: box-shadow;
-}
-@keyframes glow {
-    0% {
-        box-shadow: 0 0 15px rgba(255, 111, 97, 0.4);
-    }
-    100% {
-        box-shadow: 0 0 25px rgba(255, 111, 97, 0.7);
-    }
+    box-shadow: 0 0 20px rgba(255, 111, 97, 0.6);
+    background: #ff4d4d;
 }
 /* Ответ */
 .answer {
