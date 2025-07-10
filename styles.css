@@ -21,26 +21,31 @@ body {
 }
 /* Шар */
 .ball {
-    width: 150px; /* Вернули старый размер */
-    height: 150px; /* Вернули старый размер */
-    background: radial-gradient(circle, #ff6f61, #ff4d4d); /* Градиентный фон */
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, #ff6f61, #ff4d4d);
     border-radius: 50%;
     position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
-    will-change: transform, box-shadow; /* Оптимизация рендеринга */
+    will-change: transform;
+    transform: translate3d(0, 0, 0); /* Принудительное включение аппаратного ускорения */
+    backface-visibility: hidden; /* Оптимизация для мобильных устройств */
+    -webkit-backface-visibility: hidden;
+    contain: layout style paint; /* CSS Containment для лучшей производительности */
 }
 /* Градиент при остановке */
 .ball.glow-active {
-    animation: glow 1.5s infinite alternate;
+    animation: glow 2s infinite alternate;
+    will-change: box-shadow;
 }
 @keyframes glow {
-    from {
-        box-shadow: 0 0 20px rgba(255, 111, 97, 0.6);
+    0% {
+        box-shadow: 0 0 15px rgba(255, 111, 97, 0.4);
     }
-    to {
-        box-shadow: 0 0 30px rgba(255, 111, 97, 0.8);
+    100% {
+        box-shadow: 0 0 25px rgba(255, 111, 97, 0.7);
     }
 }
 /* Ответ */
@@ -50,10 +55,11 @@ body {
     font-weight: bold;
     text-align: center;
     opacity: 0;
-    transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.3s ease-in-out; /* Уменьшили время анимации */
     max-width: 80%;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    will-change: opacity; /* Оптимизация рендеринга */
+    will-change: opacity;
+    transform: translate3d(0, 0, 0); /* Аппаратное ускорение */
 }
 .answer.show {
     opacity: 1;

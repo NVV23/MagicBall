@@ -22,6 +22,7 @@ const soundButton = document.getElementById('soundButton'); // Кнопка зв
 // Параметры движения
 let x = window.innerWidth / 2 - 75, y = window.innerHeight / 2 - 75; // Начальная позиция
 let dx = 0, dy = 0, isStopped = true;
+let animationId = null; // ID для отмены анимации
 
 const initialSpeed = 6;
 const constantSpeedDuration = 2500; // Время постоянного движения (2 секунды)
@@ -81,85 +82,103 @@ function startMovement() {
     isStopped = false;
     answerElement.classList.remove('show');
     ball.classList.remove('glow-active');
+    disableShakeDetection();
 
     const direction = getRandomDirection();
     dx = direction.dx * initialSpeed;
     dy = direction.dy * initialSpeed;
 
-    startTime = Date.now(); // Запоминаем время начала движения
+    startTime = Date.now();
+    if (!animationId) {
+        animationId = requestAnimationFrame(moveBall);
+    }
 }
 
 // Движение шара
 let startTime = null;
 
 function moveBall() {
-    if (!isStopped) {
-        const currentTime = Date.now();
-
-        // Если прошло меньше времени, чем constantSpeedDuration, движение с постоянной скоростью
-        if (currentTime - startTime < constantSpeedDuration) {
-            x += dx;
-            y += dy;
-        } else {
-            // После истечения времени постоянного движения начинаем замедление
-            const elapsedTime = (currentTime - startTime - constantSpeedDuration) / 1000; // Время после constantSpeedDuration в секундах
-            const decelerationFactor = 1 - Math.min(elapsedTime * 0.01, 0.996); // Нелинейное замедление
-            x += dx * decelerationFactor;
-            y += dy * decelerationFactor;
-            dx *= decelerationFactor;
-            dy *= decelerationFactor;
+    if (isStopped) {
+        if (animationId) {
+            cancelAnimationFrame(animationId);
+            animationId = null;
         }
-
-        let hitWall = false;
-
-        // Проверка столкновения со стенками
-        if (x <= 0 || x >= window.innerWidth - 150) {
-            dx = -dx;
-            hitWall = true;
-        }
-        if (y <= 0 || y >= window.innerHeight - 150) {
-            dy = -dy;
-            hitWall = true;
-        }
-
-        // Воспроизведение звука при ударе
-        if (hitWall && isSoundEnabled) {
-            bounceSound.currentTime = 0;
-            bounceSound.play().catch(() => {});
-        }
-
-        // Обновление позиции шара через transform
-        ball.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`;
-
-        // Если шар почти остановился
-        if (Math.abs(dx) < 0.2 && Math.abs(dy) < 0.2) {
-            isStopped = true;
-            answerElement.textContent = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
-            answerElement.classList.add('show');
-            ball.classList.add('glow-active');
-            enableShakeDetection(); // Включаем проверку тряски
-        } else {
-            ball.classList.remove('glow-active');
-        }
+        return;
     }
-    requestAnimationFrame(moveBall);
+
+    const currentTime = Date.now();
+
+    // Если прошло меньше времени, чем constantSpeedDuration, движение с постоянной скоростью
+    if (currentTime - startTime < constantSpeedDuration) {
+        x += dx;
+        y += dy;
+    } else {
+        // После истечения времени постоянного движения начинаем замедление
+        const elapsedTime = (currentTime - startTime - constantSpeedDuration) / 1000;
+        const decelerationFactor = 1 - Math.min(elapsedTime * 0.01, 0.996);
+        x += dx * decelerationFactor;
+        y += dy * decelerationFactor;
+        dx *= decelerationFactor;
+        dy *= decelerationFactor;
+    }
+
+    let hitWall = false;
+    const ballSize = 150;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // Проверка столкновения со стенками (оптимизировано)
+    if (x <= 0 || x >= screenWidth - ballSize) {
+        dx = -dx;
+        x = Math.max(0, Math.min(x, screenWidth - ballSize));
+        hitWall = true;
+    }
+    if (y <= 0 || y >= screenHeight - ballSize) {
+        dy = -dy;
+        y = Math.max(0, Math.min(y, screenHeight - ballSize));
+        hitWall = true;
+    }
+
+    // Воспроизведение звука при ударе
+    if (hitWall && isSoundEnabled) {
+        bounceSound.currentTime = 0;
+        bounceSound.play().catch(() => {});
+    }
+
+    // Обновление позиции шара (оптимизировано)
+    ball.style.transform = `translate3d(${Math.round(x)}px, ${Math.round(y)}px, 0)`;
+
+    // Если шар почти остановился
+    if (Math.abs(dx) < 0.2 && Math.abs(dy) < 0.2) {
+        isStopped = true;
+        answerElement.textContent = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
+        answerElement.classList.add('show');
+        ball.classList.add('glow-active');
+        enableShakeDetection();
+        return;
+    }
+
+    ball.classList.remove('glow-active');
+    animationId = requestAnimationFrame(moveBall);
 }
 
-// Логика проверки тряски
-let lastShakeTime = 0, shakeCooldown = 400;
-let isShakeDetectionActive = false; // Флаг для предотвращения дублирования обработчиков
+// Логика проверки тряски (оптимизировано)
+let lastShakeTime = 0;
+const shakeCooldown = 500;
+let isShakeDetectionActive = false;
+let shakeThreshold = 35;
 
 function enableShakeDetection() {
-    if (isShakeDetectionActive) return; // Защита от дублирования
+    if (isShakeDetectionActive || !isStopped) return;
     isShakeDetectionActive = true;
 
     if (window.DeviceMotionEvent) {
-        window.addEventListener('devicemotion', handleDeviceMotion);
+        window.addEventListener('devicemotion', handleDeviceMotion, { passive: true });
     }
 }
 
 function disableShakeDetection() {
-    if (!isShakeDetectionActive) return; // Защита от повторного удаления
+    if (!isShakeDetectionActive) return;
     isShakeDetectionActive = false;
 
     if (window.DeviceMotionEvent) {
@@ -168,16 +187,19 @@ function disableShakeDetection() {
 }
 
 function handleDeviceMotion(event) {
+    if (!isStopped) return;
+    
     const now = Date.now();
     if (now - lastShakeTime < shakeCooldown) return;
 
-    const { x, y, z } = event.accelerationIncludingGravity;
-    const acceleration = Math.sqrt(x * x + y * y + z * z);
+    const acc = event.accelerationIncludingGravity;
+    if (!acc || acc.x === null) return;
 
-    if (acceleration > 35 && isStopped) { // Увеличен порог ускорения
+    const acceleration = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+
+    if (acceleration > shakeThreshold) {
         startMovement();
         lastShakeTime = now;
-        disableShakeDetection(); // Отключаем проверку тряски
     }
 }
 
@@ -203,5 +225,4 @@ soundButton.addEventListener('click', () => {
 
 // Инициализация
 setInitialPosition();
-moveBall(); // Запускаем анимацию
 enableShakeDetection(); // Включаем проверку тряски при запуске
