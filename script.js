@@ -30,8 +30,8 @@ function start() {
     ball.className = 'ball';
     
     const angle = Math.random() * Math.PI * 2;
-    dx = Math.cos(angle) * 3;
-    dy = Math.sin(angle) * 3;
+    dx = Math.cos(angle) * 7;
+    dy = Math.sin(angle) * 7;
     
     move();
 }
@@ -60,8 +60,8 @@ function move() {
         }
     }
     
-    dx *= 0.998;
-    dy *= 0.998;
+    dx *= 0.992;
+    dy *= 0.992;
     
     ball.style.transform = `translate3d(${x|0}px,${y|0}px,0)`;
     
